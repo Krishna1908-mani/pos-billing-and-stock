@@ -99,25 +99,25 @@ const ProductDetails = () => {
           <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
             <div className="text-[11px] text-slate-500 font-medium">Purchase Cost</div>
             <div className="text-lg font-bold text-slate-900 font-mono mt-0.5">
-              ₹{product.purchaseCost.toFixed(2)}
+              ₹{(product.purchaseCost ?? 0).toFixed(2)}
             </div>
           </div>
           <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
             <div className="text-[11px] text-slate-500 font-medium">Selling Price</div>
             <div className="text-lg font-bold text-indigo-600 font-mono mt-0.5">
-              ₹{product.sellingPrice.toFixed(2)}
+              ₹{(product.sellingPrice ?? 0).toFixed(2)}
             </div>
           </div>
           <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
             <div className="text-[11px] text-slate-500 font-medium">Gross Margin</div>
             <div className="text-lg font-bold text-emerald-600 mt-0.5">
-              {product.marginPercentage}%
+              {product.marginPercentage ?? 0}%
             </div>
           </div>
           <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
             <div className="text-[11px] text-slate-500 font-medium">Total On-Hand Value</div>
             <div className="text-lg font-bold text-slate-900 font-mono mt-0.5">
-              ₹{(product.stockQuantity * product.purchaseCost).toFixed(2)}
+              ₹{((product.stockQuantity || 0) * (product.purchaseCost || 0)).toFixed(2)}
             </div>
           </div>
         </div>

@@ -11,6 +11,7 @@ const validate = require('../middleware/validate');
 
 router.use(protect);
 
+router.get('/', getPaymentHistory);
 router.get('/dues', getSupplierDues);
 router.get('/history', getPaymentHistory);
 

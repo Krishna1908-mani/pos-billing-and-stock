@@ -4,6 +4,7 @@ const { check } = require('express-validator');
 const {
   getProducts,
   getProductById,
+  getLowStockProducts,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -15,6 +16,7 @@ const validate = require('../middleware/validate');
 router.use(protect);
 
 router.get('/categories', getCategories);
+router.get('/low-stock', getLowStockProducts);
 router.get('/', getProducts);
 router.get('/:id', getProductById);
 

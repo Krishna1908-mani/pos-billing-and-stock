@@ -318,9 +318,34 @@ const getCategories = async (req, res, next) => {
   }
 };
 
+// @desc    Get low stock and out of stock products
+// @route   GET /api/products/low-stock
+// @access  Private
+const getLowStockProducts = async (req, res, next) => {
+  try {
+    const products = await Product.find({
+      isDeleted: false,
+      $expr: {
+        $lte: ['$stockQuantity', '$lowStockThreshold']
+      }
+    })
+      .populate('supplier', 'name company phone')
+      .sort({ stockQuantity: 1 });
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getProducts,
   getProductById,
+  getLowStockProducts,
   createProduct,
   updateProduct,
   deleteProduct,
