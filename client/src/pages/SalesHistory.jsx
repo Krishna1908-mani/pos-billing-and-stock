@@ -196,8 +196,9 @@ const SalesHistory = () => {
                         </button>
                         <button
                           onClick={() => {
+                            const token = localStorage.getItem('stockwise_token');
                             window.open(
-                              `${import.meta.env.VITE_API_URL || '/api'}/sales/${s._id}/pdf`,
+                              `${import.meta.env.VITE_API_URL || '/api'}/sales/${s._id}/pdf${token ? `?token=${encodeURIComponent(token)}` : ''}`,
                               '_blank'
                             );
                           }}

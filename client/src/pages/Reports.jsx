@@ -63,6 +63,8 @@ const Reports = () => {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     params.append('format', 'csv');
+    const token = localStorage.getItem('stockwise_token');
+    if (token) params.append('token', token);
 
     let endpoint = '/reports/sales';
     if (activeTab === 'inventory') endpoint = '/reports/inventory-valuation';

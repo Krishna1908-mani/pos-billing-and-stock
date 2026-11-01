@@ -238,38 +238,64 @@ const createPurchase = async (req, res, next) => {
       createdBy: req.user ? req.user.id : null
     });
 
-    // Inward stock atomically for each line item and log movement
-    for (const item of processedItems) {
-      await adjustStockAndLog({
-        productId: item.product,
-        quantityDelta: item.quantity,
-        movementType: 'PURCHASE_INWARD',
-        referenceType: 'PURCHASE',
-        referenceId: purchase.purchaseNumber,
-        notes: `Inward from Supplier ${supplierDoc.company} (Invoice #${purchase.purchaseNumber})`,
-        userId: req.user ? req.user.id : null
-      });
+    // Inward stock atomically for each line item and log movement with compensation rollback
+    const inwardedItems = [];
+    try {
+      for (const item of processedItems) {
+        await adjustStockAndLog({
+          productId: item.product,
+          quantityDelta: item.quantity,
+          movementType: 'PURCHASE_INWARD',
+          referenceType: 'PURCHASE',
+          referenceId: purchase.purchaseNumber,
+          notes: `Inward from Supplier ${supplierDoc.company} (Invoice #${purchase.purchaseNumber})`,
+          userId: req.user ? req.user.id : null
+        });
+        inwardedItems.push(item);
 
-      // Optionally update latest purchase cost on product
-      await Product.findByIdAndUpdate(item.product, {
-        purchaseCost: item.unitCost
-      });
-    }
+        // Optionally update latest purchase cost on product
+        await Product.findByIdAndUpdate(item.product, {
+          purchaseCost: item.unitCost
+        });
+      }
 
-    // If an initial payment was made during purchase, record the SupplierPayment
-    if (paidNum > 0) {
-      const paySeq = await SupplierPayment.countDocuments();
-      const payNumber = `PAY-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${String(paySeq + 1).padStart(4, '0')}`;
-      await SupplierPayment.create({
-        paymentNumber: payNumber,
-        supplier: supplierDoc._id,
-        purchase: purchase._id,
-        amount: paidNum,
-        paymentDate: new Date(purchaseDate),
-        paymentMethod: paymentMethod || 'BANK_TRANSFER',
-        referenceNumber: `Initial payment for ${purchase.purchaseNumber}`,
-        notes: `Paid on purchase creation`,
-        recordedBy: req.user ? req.user.id : null
+      // If an initial payment was made during purchase, record the SupplierPayment
+      if (paidNum > 0) {
+        const paySeq = await SupplierPayment.countDocuments();
+        const payNumber = `PAY-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${String(paySeq + 1).padStart(4, '0')}`;
+        await SupplierPayment.create({
+          paymentNumber: payNumber,
+          supplier: supplierDoc._id,
+          purchase: purchase._id,
+          amount: paidNum,
+          paymentDate: new Date(purchaseDate),
+          paymentMethod: paymentMethod || 'BANK_TRANSFER',
+          referenceNumber: `Initial payment for ${purchase.purchaseNumber}`,
+          notes: `Paid on purchase creation`,
+          recordedBy: req.user ? req.user.id : null
+        });
+      }
+    } catch (inwardErr) {
+      // Rollback inwarded items
+      for (const item of inwardedItems) {
+        try {
+          await adjustStockAndLog({
+            productId: item.product,
+            quantityDelta: -item.quantity,
+            movementType: 'ADJUSTMENT_SUB',
+            referenceType: 'MANUAL_ADJUSTMENT',
+            referenceId: purchase.purchaseNumber,
+            notes: `Automatic compensation rollback for failed purchase inward ${purchase.purchaseNumber}`,
+            userId: req.user ? req.user.id : null
+          });
+        } catch (rbErr) {
+          console.error(`Rollback inward failed for item ${item.product}:`, rbErr);
+        }
+      }
+      await Purchase.findByIdAndDelete(purchase._id);
+      return res.status(500).json({
+        success: false,
+        message: inwardErr.message || 'Error occurred during stock inwarding. Rolled back changes.'
       });
     }
 

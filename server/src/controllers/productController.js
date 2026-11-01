@@ -280,6 +280,7 @@ const deleteProduct = async (req, res, next) => {
     if (salesCount > 0 || purchaseCount > 0) {
       // Historical transactions exist: soft delete to protect historical ledger
       product.isDeleted = true;
+      product.sku = `${product.sku}_DELETED_${Date.now()}`;
       await product.save();
       return res.status(200).json({
         success: true,

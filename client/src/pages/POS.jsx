@@ -589,8 +589,9 @@ const POS = () => {
             <div className="grid grid-cols-2 gap-2 pt-2">
               <button
                 onClick={() => {
+                  const token = localStorage.getItem('stockwise_token');
                   window.open(
-                    `${import.meta.env.VITE_API_URL || '/api'}/sales/${completedSale._id}/pdf`,
+                    `${import.meta.env.VITE_API_URL || '/api'}/sales/${completedSale._id}/pdf${token ? `?token=${encodeURIComponent(token)}` : ''}`,
                     '_blank'
                   );
                 }}

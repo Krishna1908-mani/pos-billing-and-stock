@@ -151,7 +151,7 @@ const recordSupplierPayment = async (req, res, next) => {
     if (purchase) {
       const purchaseDoc = await Purchase.findById(purchase);
       if (purchaseDoc) {
-        const newPaid = Number((purchaseDoc.amountPaid + payAmount).toFixed(2));
+        const newPaid = Number(Math.min(purchaseDoc.amountPaid + payAmount, purchaseDoc.totalAmount).toFixed(2));
         const newBalance = Number(Math.max(purchaseDoc.totalAmount - newPaid, 0).toFixed(2));
         const newStatus = newBalance <= 0 ? 'PAID' : 'PARTIAL';
 

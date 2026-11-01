@@ -223,6 +223,7 @@ const createSale = async (req, res, next) => {
 
     // Perform atomic stock reduction with rollback protection
     const deductedItems = [];
+    let sale;
     try {
       for (const item of processedItems) {
         await adjustStockAndLog({
@@ -236,45 +237,49 @@ const createSale = async (req, res, next) => {
         });
         deductedItems.push(item);
       }
+
+      sale = await Sale.create({
+        invoiceNumber,
+        customerName: (customerName || 'Walk-in Customer').trim(),
+        customerPhone: (customerPhone || '').trim(),
+        items: processedItems,
+        subtotal,
+        discount: discNum,
+        taxRate: taxRateNum,
+        taxAmount,
+        grandTotal,
+        totalCost,
+        grossProfit,
+        paymentMethod,
+        amountPaid: paidNum,
+        changeDue,
+        status: 'COMPLETED',
+        idempotencyKey: idempotencyKey || null,
+        soldBy: req.user ? req.user.id : null,
+        saleDate: new Date()
+      });
     } catch (concurrencyErr) {
       // Rollback any items that were successfully deducted before failure
       for (const rolledBackItem of deductedItems) {
-        await adjustStockAndLog({
-          productId: rolledBackItem.product,
-          quantityDelta: rolledBackItem.quantity,
-          movementType: 'ADJUSTMENT_ADD',
-          referenceType: 'MANUAL_ADJUSTMENT',
-          referenceId: invoiceNumber,
-          notes: `Automatic compensation rollback for failed sale ${invoiceNumber}`,
-          userId: req.user ? req.user.id : null
-        });
+        try {
+          await adjustStockAndLog({
+            productId: rolledBackItem.product,
+            quantityDelta: rolledBackItem.quantity,
+            movementType: 'ADJUSTMENT_ADD',
+            referenceType: 'MANUAL_ADJUSTMENT',
+            referenceId: invoiceNumber,
+            notes: `Automatic compensation rollback for failed sale ${invoiceNumber}`,
+            userId: req.user ? req.user.id : null
+          });
+        } catch (rbErr) {
+          console.error(`Rollback compensation error for item ${rolledBackItem.product}:`, rbErr);
+        }
       }
-      return res.status(409).json({
+      return res.status(concurrencyErr.status || 409).json({
         success: false,
         message: concurrencyErr.message || 'Concurrent stock update detected. Please try checkout again.'
       });
     }
-
-    const sale = await Sale.create({
-      invoiceNumber,
-      customerName: (customerName || 'Walk-in Customer').trim(),
-      customerPhone: (customerPhone || '').trim(),
-      items: processedItems,
-      subtotal,
-      discount: discNum,
-      taxRate: taxRateNum,
-      taxAmount,
-      grandTotal,
-      totalCost,
-      grossProfit,
-      paymentMethod,
-      amountPaid: paidNum,
-      changeDue,
-      status: 'COMPLETED',
-      idempotencyKey: idempotencyKey || null,
-      soldBy: req.user ? req.user.id : null,
-      saleDate: new Date()
-    });
 
     res.status(201).json({
       success: true,

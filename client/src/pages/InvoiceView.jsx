@@ -107,8 +107,9 @@ const InvoiceView = () => {
 
           <button
             onClick={() => {
+              const token = localStorage.getItem('stockwise_token');
               window.open(
-                `${import.meta.env.VITE_API_URL || '/api'}/sales/${sale._id}/pdf`,
+                `${import.meta.env.VITE_API_URL || '/api'}/sales/${sale._id}/pdf${token ? `?token=${encodeURIComponent(token)}` : ''}`,
                 '_blank'
               );
             }}

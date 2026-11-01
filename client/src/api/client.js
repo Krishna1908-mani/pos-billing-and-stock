@@ -35,4 +35,32 @@ api.interceptors.response.use(
   }
 );
 
+/**
+ * Downloads a file via an authenticated Axios GET request using Blob.
+ */
+export const downloadFile = async (url, defaultFilename = 'download') => {
+  const response = await api.get(url, { responseType: 'blob' });
+  const blob = new Blob([response.data], {
+    type: response.headers['content-type'] || 'application/octet-stream'
+  });
+  const downloadUrl = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = downloadUrl;
+
+  const disposition = response.headers['content-disposition'];
+  let filename = defaultFilename;
+  if (disposition && disposition.includes('filename=')) {
+    const filenameMatch = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+    if (filenameMatch && filenameMatch[1]) {
+      filename = filenameMatch[1].replace(/['"]/g, '');
+    }
+  }
+
+  link.setAttribute('download', filename);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(downloadUrl);
+};
+
 export default api;
