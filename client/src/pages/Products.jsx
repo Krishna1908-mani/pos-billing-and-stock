@@ -19,13 +19,13 @@ import {
   ChevronRight
 } from 'lucide-react';
 
-const Products = () => {
+const Products = ({ initialStockStatus = 'ALL' }) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('ALL');
-  const [stockStatus, setStockStatus] = useState('ALL');
+  const [stockStatus, setStockStatus] = useState(initialStockStatus);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
 

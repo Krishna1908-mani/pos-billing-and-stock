@@ -11,6 +11,7 @@ const Purchase = require('../models/Purchase');
 const Sale = require('../models/Sale');
 const SupplierPayment = require('../models/SupplierPayment');
 const StockMovement = require('../models/StockMovement');
+const SaleReturn = require('../models/SaleReturn');
 
 // Services
 const { adjustStockAndLog } = require('../services/stockLedgerService');
@@ -33,7 +34,8 @@ test.before(async () => {
     Purchase.deleteMany({}),
     Sale.deleteMany({}),
     SupplierPayment.deleteMany({}),
-    StockMovement.deleteMany({})
+    StockMovement.deleteMany({}),
+    SaleReturn.deleteMany({})
   ]);
 
   testSupplier = await Supplier.create({
@@ -405,4 +407,99 @@ test('Scenario 10: Idempotency Protection & Soft-delete SKU Reuse', async () => 
   const activeTS001 = await Product.findOne({ sku: 'TS001', isDeleted: false });
   assert.equal(activeTS001.name, 'New Generation Shirt');
 });
+
+test('Scenario F: Stock Return & Financial Reversal (Audit Integrity)', async () => {
+  const returnTestProd = await Product.create({
+    name: 'Returnable Cotton Polo',
+    sku: 'POLO-RET-01',
+    category: 'Apparel',
+    purchaseCost: 200,
+    sellingPrice: 350,
+    stockQuantity: 10,
+    lowStockThreshold: 3
+  });
+
+  // Create a separate completed sale of 2 units @ 350
+  const returnTestSale = await Sale.create({
+    invoiceNumber: 'INV-RETURN-TEST-001',
+    customerName: 'Return Tester',
+    items: [
+      {
+        product: returnTestProd._id,
+        productName: returnTestProd.name,
+        sku: returnTestProd.sku,
+        quantity: 2,
+        unitCostSnapshot: 200,
+        sellingPriceSnapshot: 350,
+        lineTotal: 700,
+        profit: 300
+      }
+    ],
+    subtotal: 700,
+    grandTotal: 700,
+    totalCost: 400,
+    grossProfit: 300,
+    paymentMethod: 'CASH',
+    amountPaid: 700,
+    status: 'COMPLETED',
+    saleDate: new Date()
+  });
+
+  // Simulate initial outward stock reduction
+  await adjustStockAndLog({
+    productId: returnTestProd._id,
+    quantityDelta: -2,
+    movementType: 'SALE_OUTWARD',
+    referenceType: 'SALE',
+    referenceId: returnTestSale.invoiceNumber,
+    notes: 'Sold 2 units'
+  });
+
+  const stockBeforeReturn = (await Product.findById(returnTestProd._id)).stockQuantity;
+  assert.equal(stockBeforeReturn, 8, 'Stock should be 8 after selling 2 from 10');
+
+  // Process return: restore 1 unit
+  await adjustStockAndLog({
+    productId: returnTestProd._id,
+    quantityDelta: 1,
+    movementType: 'SALE_RETURN',
+    referenceType: 'RETURN',
+    referenceId: 'RET-20261102-0001',
+    notes: 'Return 1 unit'
+  });
+
+  const saleReturn = await SaleReturn.create({
+    returnNumber: 'RET-20261102-0001',
+    sale: returnTestSale._id,
+    invoiceNumber: returnTestSale.invoiceNumber,
+    items: [
+      {
+        product: returnTestProd._id,
+        productName: returnTestProd.name,
+        sku: returnTestProd.sku,
+        quantity: 1,
+        refundAmount: 350,
+        unitCostSnapshot: 200
+      }
+    ],
+    refundTotal: 350,
+    refundMethod: 'CASH',
+    reason: 'Customer exchange request',
+    returnDate: new Date()
+  });
+
+  returnTestSale.status = 'RETURNED';
+  await returnTestSale.save();
+
+  const stockAfterReturn = (await Product.findById(returnTestProd._id)).stockQuantity;
+  assert.equal(stockAfterReturn, 9, 'Stock must increment by returned quantity (8 + 1 = 9)');
+  assert.equal(returnTestSale.status, 'RETURNED');
+  assert.equal(saleReturn.refundTotal, 350);
+
+  const returnMovement = await StockMovement.findOne({ referenceId: 'RET-20261102-0001' });
+  assert.ok(returnMovement, 'SALE_RETURN ledger movement must exist');
+  assert.equal(returnMovement.movementType, 'SALE_RETURN');
+  assert.equal(returnMovement.quantityChanged, 1);
+});
+
 

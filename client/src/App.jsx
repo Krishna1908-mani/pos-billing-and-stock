@@ -76,10 +76,14 @@ function App() {
               <Route path="sales" element={<SalesHistory />} />
               <Route path="sales/:id" element={<InvoiceView />} />
               <Route path="inventory" element={<InventoryMovements />} />
+              <Route path="stock-movement" element={<InventoryMovements />} />
+              <Route path="low-stock" element={<Products initialStockStatus="LOW_STOCK" />} />
               <Route path="dues" element={<SupplierDues />} />
+              <Route path="payments" element={<SupplierDues />} />
               <Route path="restock" element={<RestockRecommendations />} />
               <Route path="reports" element={<Reports />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="profile" element={<Settings />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>

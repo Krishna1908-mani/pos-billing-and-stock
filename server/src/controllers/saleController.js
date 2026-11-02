@@ -340,9 +340,11 @@ const returnSale = async (req, res, next) => {
 
     for (const retItem of itemsToReturn) {
       // Find matching item in original sale
-      const origItem = sale.items.find(
-        (i) => i.product.toString() === retItem.product.toString() || i.sku === retItem.sku
-      );
+      const origItem = sale.items.find((i) => {
+        const iProdStr = i.product ? i.product.toString() : '';
+        const retProdStr = retItem.product ? retItem.product.toString() : '';
+        return (iProdStr && retProdStr && iProdStr === retProdStr) || (i.sku && retItem.sku && i.sku === retItem.sku);
+      });
       if (!origItem) continue;
 
       const returnQty = Math.min(Number(retItem.quantity) || origItem.quantity, origItem.quantity);
