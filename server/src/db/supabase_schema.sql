@@ -277,6 +277,24 @@ CREATE TABLE IF NOT EXISTS public.stock_movements (
 );
 
 -- ------------------------------------------------------------------------------
+-- Table 10b: LEGACY_STOCK_MOVEMENTS (Archived Historical MongoDB Ledger)
+-- Preserves all original un-reconciled legacy movements without polluting live ledger
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.legacy_stock_movements (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  mongo_id VARCHAR(64) UNIQUE,
+  product_id UUID NOT NULL REFERENCES public.products(id) ON DELETE RESTRICT,
+  movement_type VARCHAR(50) NOT NULL,
+  quantity_changed INTEGER NOT NULL,
+  balance_after INTEGER NOT NULL,
+  reference_type VARCHAR(50) DEFAULT 'MANUAL_ADJUSTMENT',
+  reference_id VARCHAR(100) DEFAULT '',
+  notes TEXT DEFAULT '',
+  performed_by UUID REFERENCES public.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ------------------------------------------------------------------------------
 -- Table 11: SUPPLIER_PAYMENTS (Cash Outflow / Accounts Payable Ledger)
 -- RESTRICTS supplier deletion: Financial ledger MUST NOT be deleted!
 -- ------------------------------------------------------------------------------
