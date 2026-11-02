@@ -292,13 +292,13 @@ const Reports = () => {
                       <td className="py-2.5 px-4 text-center font-bold text-slate-700">{cat.productCount}</td>
                       <td className="py-2.5 px-4 text-center font-bold text-slate-900">{cat.totalUnits}</td>
                       <td className="py-2.5 px-4 text-right font-mono font-medium text-slate-700">
-                        ₹{cat.costValuation.toLocaleString('en-IN')}
+                        ₹{Number(cat.costValuation || 0).toLocaleString('en-IN')}
                       </td>
                       <td className="py-2.5 px-4 text-right font-mono font-bold text-indigo-600">
-                        ₹{cat.retailValuation.toLocaleString('en-IN')}
+                        ₹{Number(cat.retailValuation || 0).toLocaleString('en-IN')}
                       </td>
                       <td className="py-2.5 px-4 text-right font-mono font-bold text-emerald-600">
-                        ₹{cat.potentialProfit.toLocaleString('en-IN')}
+                        ₹{Number(cat.potentialProfit || 0).toLocaleString('en-IN')}
                       </td>
                     </tr>
                   ))}

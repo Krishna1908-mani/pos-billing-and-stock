@@ -112,21 +112,21 @@ const SupplierDues = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <KpiCard
           title="Total Outstanding Payables"
-          value={`₹${(summary.totalOutstanding || 0).toLocaleString('en-IN')}`}
+          value={`₹${Number(summary.totalOutstanding || duesData?.totalOutstandingAll || 0).toLocaleString('en-IN')}`}
           subtitle="Net accounts payable across all vendors"
           icon={CreditCard}
           color="purple"
         />
         <KpiCard
           title="Past Due / Overdue Amount"
-          value={`₹${(summary.totalOverdue || 0).toLocaleString('en-IN')}`}
+          value={`₹${Number(summary.totalOverdue || duesData?.totalOverdueAll || 0).toLocaleString('en-IN')}`}
           subtitle="Bills exceeding agreed credit due dates"
           icon={AlertCircle}
           color="rose"
         />
         <KpiCard
           title="Suppliers with Open Dues"
-          value={summary.suppliersWithDuesCount ?? 0}
+          value={summary.suppliersWithDuesCount ?? duesData?.suppliersWithDuesCount ?? 0}
           subtitle="Active creditors awaiting settlement"
           icon={Building}
           color="indigo"
@@ -159,27 +159,30 @@ const SupplierDues = () => {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {payables.map((item) => {
-                const s = item.supplier;
+                const s = item.supplier || {};
+                const currentOutstanding = Number(item.currentOutstanding ?? item.totalBalanceDue ?? 0);
+                const totalPurchased = Number(item.totalPurchased ?? 0);
+                const totalPayments = Number(item.totalPayments ?? item.totalPaidOnPurchases ?? 0);
                 return (
-                  <tr key={s._id} className="hover:bg-slate-50/70 transition-colors">
+                  <tr key={s._id || s.id || Math.random()} className="hover:bg-slate-50/70 transition-colors">
                     <td className="py-3 px-4">
-                      <div className="font-semibold text-slate-900">{s.company}</div>
+                      <div className="font-semibold text-slate-900">{s.company || 'Unknown Supplier'}</div>
                       <div className="text-[11px] text-slate-500">{s.name}</div>
                     </td>
-                    <td className="py-3 px-4 font-mono text-slate-600">{s.phone}</td>
+                    <td className="py-3 px-4 font-mono text-slate-600">{s.phone || '—'}</td>
                     <td className="py-3 px-4 text-right font-mono font-medium text-slate-700">
-                      ₹{item.totalPurchased.toLocaleString('en-IN')}
+                      ₹{totalPurchased.toLocaleString('en-IN')}
                     </td>
                     <td className="py-3 px-4 text-right font-mono font-medium text-emerald-600">
-                      ₹{item.totalPayments.toLocaleString('en-IN')}
+                      ₹{totalPayments.toLocaleString('en-IN')}
                     </td>
                     <td className="py-3 px-4 text-right">
                       <span
                         className={`font-mono font-bold text-sm ${
-                          item.currentOutstanding > 0 ? 'text-rose-600' : 'text-emerald-600'
+                          currentOutstanding > 0 ? 'text-rose-600' : 'text-emerald-600'
                         }`}
                       >
-                        ₹{item.currentOutstanding.toLocaleString('en-IN')}
+                        ₹{currentOutstanding.toLocaleString('en-IN')}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-center">
@@ -187,7 +190,7 @@ const SupplierDues = () => {
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
                           Overdue Bills
                         </span>
-                      ) : item.currentOutstanding > 0 ? (
+                      ) : currentOutstanding > 0 ? (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800">
                           Due
                         </span>
@@ -252,24 +255,24 @@ const SupplierDues = () => {
                 {unpaidInvoices.map((inv) => {
                   const isOverdue = inv.dueDate && new Date(inv.dueDate) < new Date();
                   return (
-                    <tr key={inv._id} className="hover:bg-slate-50/60">
+                    <tr key={inv._id || inv.id} className="hover:bg-slate-50/60">
                       <td className="py-2.5 px-3 font-mono font-semibold text-indigo-600">
                         {inv.purchaseNumber}
                       </td>
                       <td className="py-2.5 px-3 font-semibold text-slate-800">
-                        {inv.supplier?.company}
+                        {inv.supplier?.company || inv.supplierCompany || 'Supplier'}
                       </td>
                       <td className="py-2.5 px-3 text-slate-500">
-                        {new Date(inv.purchaseDate).toLocaleDateString()}
+                        {inv.purchaseDate ? new Date(inv.purchaseDate).toLocaleDateString() : '—'}
                       </td>
                       <td className="py-2.5 px-3 text-slate-700 font-medium">
                         {inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : '—'}
                       </td>
                       <td className="py-2.5 px-3 text-right font-mono font-medium text-slate-900">
-                        ₹{inv.totalAmount.toFixed(2)}
+                        ₹{Number(inv.totalAmount || 0).toFixed(2)}
                       </td>
                       <td className="py-2.5 px-3 text-right font-mono font-bold text-rose-600">
-                        ₹{inv.balanceDue.toFixed(2)}
+                        ₹{Number(inv.balanceDue || 0).toFixed(2)}
                       </td>
                       <td className="py-2.5 px-3 text-center">
                         {isOverdue ? (

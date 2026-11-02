@@ -99,21 +99,54 @@ const getSupplierDues = async () => {
         company: s.company,
         phone: s.phone,
         email: s.email,
-        openingBalance: parseFloat(s.opening_balance)
+        openingBalance: parseFloat(s.opening_balance || 0)
       },
       totalPurchased: parseFloat(s.total_purchased || 0),
+      totalPayments: parseFloat(s.total_payments || 0),
       totalPaidOnPurchases: parseFloat(s.total_payments || 0),
+      currentOutstanding: currentOutstanding,
       totalBalanceDue: currentOutstanding,
+      hasOverdue: myUnpaidPurchases.some(p => p.isOverdue),
       unpaidInvoicesCount: myUnpaidPurchases.length,
       unpaidInvoices: myUnpaidPurchases
     };
   });
 
+  const allUnpaidPurchases = purchRes.rows.map(p => ({
+    id: p.id,
+    _id: p.id,
+    purchaseNumber: p.purchase_number,
+    supplierInvoiceNumber: p.supplier_invoice_number,
+    supplier: {
+      id: p.supplier_id,
+      _id: p.supplier_id,
+      name: p.supplier_name,
+      company: p.supplier_company,
+      phone: p.supplier_phone
+    },
+    purchaseDate: p.purchase_date,
+    dueDate: p.due_date,
+    totalAmount: parseFloat(p.total_amount || 0),
+    amountPaid: parseFloat(p.amount_paid || 0),
+    balanceDue: parseFloat(p.balance_due || 0),
+    paymentStatus: p.payment_status,
+    isOverdue: Boolean(p.due_date && new Date(p.due_date) < now)
+  }));
+
+  const suppliersWithDuesCount = supplierPayables.filter(p => p.currentOutstanding > 0).length;
+
   return {
+    summary: {
+      totalOutstanding: Number(totalOutstandingAll.toFixed(2)),
+      totalOverdue: Number(totalOverdueAll.toFixed(2)),
+      suppliersWithDuesCount
+    },
     totalOutstandingAll: Number(totalOutstandingAll.toFixed(2)),
     totalOverdueAll: Number(totalOverdueAll.toFixed(2)),
     supplierCount: supplierPayables.length,
-    payables: supplierPayables
+    suppliersWithDuesCount,
+    payables: supplierPayables,
+    unpaidPurchases: allUnpaidPurchases
   };
 };
 

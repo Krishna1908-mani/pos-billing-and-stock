@@ -223,7 +223,7 @@ const RestockRecommendations = () => {
           <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between text-xs text-indigo-200">
             <div>Products Analyzed: <strong className="text-white">{meta?.totalProductsAnalyzed || 0}</strong></div>
             <div>Reorder Flagged: <strong className="text-amber-400">{meta?.productsNeedingRestock || 0}</strong></div>
-            <div>Estimated Restock Capital: <strong className="text-emerald-400 font-mono">₹{totalRestockCost.toLocaleString('en-IN')}</strong></div>
+            <div>Estimated Restock Capital: <strong className="text-emerald-400 font-mono">₹{Number(totalRestockCost || 0).toLocaleString('en-IN')}</strong></div>
           </div>
         </div>
       </div>
@@ -349,7 +349,7 @@ const RestockRecommendations = () => {
 
                       <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">
                         {rec.estimatedRestockCost > 0
-                          ? `₹${rec.estimatedRestockCost.toLocaleString('en-IN')}`
+                          ? `₹${Number(rec.estimatedRestockCost || 0).toLocaleString('en-IN')}`
                           : '—'}
                       </td>
 
