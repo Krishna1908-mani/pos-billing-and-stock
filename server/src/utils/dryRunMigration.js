@@ -400,15 +400,38 @@ async function dryRunMigration() {
     // 1. Table Counts Verification
     const tablesToCheck = [
       'users', 'suppliers', 'products', 'purchases', 'purchase_items',
-      'sales', 'sale_items', 'supplier_payments', 'legacy_stock_movements', 'stock_movements'
+      'sales', 'sale_items', 'supplier_payments', 'legacy_stock_movements',
+      'stock_movements', 'sale_returns', 'sale_return_items'
     ];
 
+    let totalStagedRows = 0;
     for (const t of tablesToCheck) {
       const cRes = await client.query(`SELECT COUNT(*) FROM public.${t};`);
       const cnt = parseInt(cRes.rows[0].count, 10);
       report.targetCounts[t] = cnt;
-      console.log(`  Table: ${t.padEnd(25)} | Staged Count: ${cnt}`);
+      totalStagedRows += cnt;
+      console.log(`  Table: ${t.padEnd(25)} | Staged Count: ${String(cnt).padStart(3)}`);
     }
+    report.totalStagedRows = totalStagedRows;
+    console.log(`  ---------------------------------------------------`);
+    console.log(`  TOTAL STAGED ROWS IN POSTGRESQL:      ${totalStagedRows}`);
+    console.log(`  ---------------------------------------------------`);
+
+    // Check for duplicate mongo_id values
+    const dupTables = ['users', 'suppliers', 'products', 'purchases', 'sales', 'supplier_payments', 'legacy_stock_movements'];
+    for (const dt of dupTables) {
+      const dupRes = await client.query(`
+        SELECT mongo_id, COUNT(*) 
+        FROM public.${dt} 
+        WHERE mongo_id IS NOT NULL 
+        GROUP BY mongo_id 
+        HAVING COUNT(*) > 1;
+      `);
+      if (dupRes.rows.length > 0) {
+        throw new Error(`Duplicate mongo_id detected in table ${dt}`);
+      }
+    }
+    console.log('  ✅ No duplicate mongo_id values detected across any table.');
 
     // 2. Financial Totals Comparison
     const pgSalesSum = await client.query(`
@@ -524,3 +547,4 @@ async function dryRunMigration() {
 }
 
 dryRunMigration().catch(console.error);
+
