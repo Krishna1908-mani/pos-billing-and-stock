@@ -18,14 +18,17 @@ const login = async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
+      console.warn(`[Auth Warning] Login attempt missing credentials: email=${Boolean(email)}, password=${Boolean(password)} (IP: ${req.ip || 'unknown'})`);
       return res.status(400).json({
         success: false,
         message: 'Please provide both email and password'
       });
     }
 
-    const user = await userRepository.findByEmail(email);
+    const trimmedEmail = email.trim().toLowerCase();
+    const user = await userRepository.findByEmail(trimmedEmail);
     if (!user) {
+      console.warn(`[Auth Audit] Login failed: User not found for email "${trimmedEmail}" (IP: ${req.ip || 'unknown'})`);
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password'
@@ -33,6 +36,7 @@ const login = async (req, res, next) => {
     }
 
     if (!user.isActive) {
+      console.warn(`[Auth Audit] Login blocked: Account deactivated for user "${trimmedEmail}" (ID: ${user.id}, Role: ${user.role})`);
       return res.status(403).json({
         success: false,
         message: 'Your account has been deactivated. Please contact an admin.'
@@ -41,12 +45,14 @@ const login = async (req, res, next) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.warn(`[Auth Audit] Login failed: Invalid password for user "${trimmedEmail}" (ID: ${user.id}, IP: ${req.ip || 'unknown'})`);
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password'
       });
     }
 
+    console.log(`[Auth Audit] Login successful for user "${trimmedEmail}" (Role: ${user.role}, ID: ${user.id})`);
     const token = generateToken(user.id);
 
     res.status(200).json({
