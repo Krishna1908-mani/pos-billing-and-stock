@@ -30,14 +30,42 @@ import Settings from './pages/Settings';
 // Protected Route Guard
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
+  const [slowLoading, setSlowLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    let timer;
+    if (loading) {
+      timer = setTimeout(() => setSlowLoading(true), 4000);
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white text-sm">
-        <div className="flex items-center gap-3">
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white text-sm p-6 text-center">
+        <div className="flex items-center gap-3 mb-4">
           <span className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
           <span>Authenticating StockWise session...</span>
         </div>
+        {slowLoading && (
+          <div className="max-w-md bg-slate-800/90 border border-slate-700 rounded-xl p-4 text-xs text-slate-300 space-y-3 shadow-xl">
+            <p className="leading-relaxed">
+              The backend service is waking up from idle (Render free tier spin-up typically takes ~30–50s). Please wait a moment.
+            </p>
+            <div className="flex justify-center gap-2 pt-1">
+              <button
+                onClick={() => {
+                  localStorage.removeItem('stockwise_token');
+                  localStorage.removeItem('stockwise_user');
+                  window.location.href = '/login';
+                }}
+                className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-white font-medium text-xs transition-colors"
+              >
+                Sign In With Different Account
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

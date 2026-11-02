@@ -5,35 +5,58 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('stockwise_user');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem('stockwise_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
   });
   const [token, setToken] = useState(() => localStorage.getItem('stockwise_token'));
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    // Optimistic hydration: if both token and user are cached, don't block render
+    const hasToken = Boolean(localStorage.getItem('stockwise_token'));
+    const hasUser = Boolean(localStorage.getItem('stockwise_user'));
+    return hasToken && !hasUser;
+  });
 
-  // Validate session on load
+  // Validate session in background
   useEffect(() => {
+    let isMounted = true;
     const checkAuth = async () => {
       const storedToken = localStorage.getItem('stockwise_token');
       if (storedToken) {
         try {
-          const res = await api.get('/auth/me');
-          if (res.data.success) {
+          const res = await api.get('/auth/me', { timeout: 15000 });
+          if (res.data.success && isMounted) {
             setUser(res.data.user);
             localStorage.setItem('stockwise_user', JSON.stringify(res.data.user));
           }
         } catch (err) {
-          console.error('Session validation failed:', err.message);
-          localStorage.removeItem('stockwise_token');
-          localStorage.removeItem('stockwise_user');
-          setUser(null);
-          setToken(null);
+          // ONLY clear tokens if the backend explicitly rejected the token with 401
+          // Do NOT clear tokens on network timeout, 502, 504, or cold boot delay!
+          if (err.response && err.response.status === 401) {
+            console.warn('Session expired or invalid (401). Clearing credentials.');
+            localStorage.removeItem('stockwise_token');
+            localStorage.removeItem('stockwise_user');
+            if (isMounted) {
+              setUser(null);
+              setToken(null);
+            }
+          } else {
+            console.warn('Backend reachability check delayed, retaining cached session:', err.message);
+          }
         }
       }
-      setLoading(false);
+      if (isMounted) {
+        setLoading(false);
+      }
     };
 
     checkAuth();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const login = async (email, password) => {
