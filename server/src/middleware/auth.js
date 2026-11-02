@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const userRepository = require('../repositories/userRepository');
 
 const protect = async (req, res, next) => {
   try {
@@ -18,7 +18,7 @@ const protect = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'stockwise_super_secret_jwt_key_2026_secure');
-    const user = await User.findById(decoded.id).select('-password');
+    const user = await userRepository.findById(decoded.id);
 
     if (!user) {
       return res.status(401).json({

@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const userRepository = require('../repositories/userRepository');
 
 const generateToken = (id) => {
   return jwt.sign(
@@ -23,7 +24,7 @@ const login = async (req, res, next) => {
       });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    const user = await userRepository.findByEmail(email);
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -38,7 +39,7 @@ const login = async (req, res, next) => {
       });
     }
 
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -46,13 +47,14 @@ const login = async (req, res, next) => {
       });
     }
 
-    const token = generateToken(user._id);
+    const token = generateToken(user.id);
 
     res.status(200).json({
       success: true,
       token,
       user: {
-        id: user._id,
+        id: user.id,
+        _id: user.id,
         name: user.name,
         email: user.email,
         role: user.role
@@ -68,11 +70,15 @@ const login = async (req, res, next) => {
 // @access  Private
 const getMe = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.id).select('-password');
+    const user = await userRepository.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
     res.status(200).json({
       success: true,
       user: {
-        id: user._id,
+        id: user.id,
+        _id: user.id,
         name: user.name,
         email: user.email,
         role: user.role
@@ -90,7 +96,9 @@ const register = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
 
-    const count = await User.countDocuments();
+    const allUsers = await userRepository.getAllUsers();
+    const count = allUsers.length;
+
     // Allow public registration only for the very first user (First-run bootstrap)
     if (count > 0) {
       if (!req.user || req.user.role !== 'admin') {
@@ -101,7 +109,7 @@ const register = async (req, res, next) => {
       }
     }
 
-    const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
+    const existingUser = await userRepository.findByEmail(email);
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -112,21 +120,26 @@ const register = async (req, res, next) => {
     // First user is automatically admin
     const userRole = count === 0 ? 'admin' : (role === 'admin' ? 'admin' : 'staff');
 
-    const newUser = await User.create({
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    const newUser = await userRepository.createUser({
       name,
-      email: email.toLowerCase().trim(),
-      password,
-      role: userRole
+      email,
+      passwordHash,
+      role: userRole,
+      isActive: true
     });
 
-    const token = generateToken(newUser._id);
+    const token = generateToken(newUser.id);
 
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
       token,
       user: {
-        id: newUser._id,
+        id: newUser.id,
+        _id: newUser.id,
         name: newUser.name,
         email: newUser.email,
         role: newUser.role
@@ -142,10 +155,10 @@ const register = async (req, res, next) => {
 // @access  Public
 const getSetupStatus = async (req, res, next) => {
   try {
-    const count = await User.countDocuments();
+    const allUsers = await userRepository.getAllUsers();
     res.status(200).json({
       success: true,
-      isSetupRequired: count === 0
+      isSetupRequired: allUsers.length === 0
     });
   } catch (error) {
     next(error);

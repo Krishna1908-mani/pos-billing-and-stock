@@ -49,14 +49,15 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/api', apiLimiter);
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+  const pgCheck = await testPostgresConnection();
   res.status(200).json({
     status: 'UP',
     system: 'StockWise Inventory & Sales Intelligence System',
     timestamp: new Date().toISOString(),
     databases: {
       mongodb: mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED',
-      postgres: isPostgresConfigured() ? 'CONFIGURED' : 'PENDING_CONFIG'
+      postgres: pgCheck.connected ? 'CONNECTED' : (isPostgresConfigured() ? 'ERROR' : 'PENDING_CONFIG')
     },
     uptimeSeconds: Math.floor(process.uptime())
   });
@@ -99,10 +100,20 @@ const PORT = process.env.PORT || 5000;
 
 // Connect DB and listen only if not imported as module in test
 if (process.env.NODE_ENV !== 'test') {
-  connectDB().then(() => {
+  Promise.all([
+    connectDB(),
+    testPostgresConnection()
+  ]).then(([mongoConn, pgStatus]) => {
+    if (pgStatus.connected) {
+      console.log(`[Supabase PostgreSQL Connected] Database: ${pgStatus.database}, Version: ${pgStatus.version}`);
+    } else {
+      console.warn(`[Supabase PostgreSQL Warning] Not connected: ${pgStatus.error}`);
+    }
     app.listen(PORT, () => {
       console.log(`[StockWise Server] Running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
     });
+  }).catch((err) => {
+    console.error(`[Server Startup Error]`, err);
   });
 }
 

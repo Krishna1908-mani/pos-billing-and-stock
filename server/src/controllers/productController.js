@@ -1,7 +1,5 @@
-const Product = require('../models/Product');
-const Purchase = require('../models/Purchase');
-const Sale = require('../models/Sale');
-const StockMovement = require('../models/StockMovement');
+const productRepository = require('../repositories/productRepository');
+const stockMovementRepository = require('../repositories/stockMovementRepository');
 
 // @desc    Get all products with filters, search, pagination, and sorting
 // @route   GET /api/products
@@ -19,74 +17,25 @@ const getProducts = async (req, res, next) => {
       sortOrder = 'asc'
     } = req.query;
 
-    const query = { isDeleted: false };
-
-    // Search by name or SKU
-    if (search.trim()) {
-      const searchRegex = new RegExp(search.trim(), 'i');
-      query.$or = [{ name: searchRegex }, { sku: searchRegex }, { description: searchRegex }];
-    }
-
-    // Category filter
-    if (category && category !== 'ALL') {
-      query.category = category;
-    }
-
-    // Supplier filter
-    if (supplier && supplier !== 'ALL') {
-      query.supplier = supplier;
-    }
-
-    // Stock Status filter
-    if (stockStatus === 'OUT_OF_STOCK') {
-      query.stockQuantity = { $lte: 0 };
-    } else if (stockStatus === 'LOW_STOCK') {
-      // Products where stockQuantity <= lowStockThreshold and > 0
-      query.$expr = {
-        $and: [
-          { $gt: ['$stockQuantity', 0] },
-          { $lte: ['$stockQuantity', '$lowStockThreshold'] }
-        ]
-      };
-    } else if (stockStatus === 'IN_STOCK') {
-      query.$expr = {
-        $gt: ['$stockQuantity', '$lowStockThreshold']
-      };
-    }
-
-    const pageNum = parseInt(page, 10) || 1;
-    const limitNum = parseInt(limit, 10) || 20;
-    const skip = (pageNum - 1) * limitNum;
-
-    // Sort configuration
-    const sortFieldMap = {
-      name: 'name',
-      sku: 'sku',
-      purchaseCost: 'purchaseCost',
-      sellingPrice: 'sellingPrice',
-      stockQuantity: 'stockQuantity',
-      createdAt: 'createdAt'
-    };
-    const sortField = sortFieldMap[sortBy] || 'name';
-    const sortDirection = sortOrder === 'desc' ? -1 : 1;
-
-    const [products, total] = await Promise.all([
-      Product.find(query)
-        .populate('supplier', 'name company phone')
-        .sort({ [sortField]: sortDirection })
-        .skip(skip)
-        .limit(limitNum),
-      Product.countDocuments(query)
-    ]);
+    const result = await productRepository.getProducts({
+      search,
+      category,
+      stockStatus,
+      supplier,
+      page,
+      limit,
+      sortBy,
+      sortOrder
+    });
 
     res.status(200).json({
       success: true,
-      data: products,
+      data: result.products,
       pagination: {
-        page: pageNum,
-        limit: limitNum,
-        total,
-        pages: Math.ceil(total / limitNum) || 1
+        page: result.page,
+        limit: parseInt(limit, 10) || 20,
+        total: result.total,
+        pages: result.pages
       }
     });
   } catch (error) {
@@ -99,7 +48,7 @@ const getProducts = async (req, res, next) => {
 // @access  Private
 const getProductById = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id).populate('supplier');
+    const product = await productRepository.getProductById(req.params.id);
 
     if (!product || product.isDeleted) {
       return res.status(404).json({
@@ -109,15 +58,16 @@ const getProductById = async (req, res, next) => {
     }
 
     // Fetch recent 10 stock movements for this product
-    const recentMovements = await StockMovement.find({ product: product._id })
-      .sort({ createdAt: -1 })
-      .limit(10)
-      .populate('performedBy', 'name');
+    const movementsResult = await stockMovementRepository.getMovements({
+      product: product.id,
+      page: 1,
+      limit: 10
+    });
 
     res.status(200).json({
       success: true,
       data: product,
-      recentMovements
+      recentMovements: movementsResult.movements
     });
   } catch (error) {
     next(error);
@@ -144,9 +94,8 @@ const createProduct = async (req, res, next) => {
       imageUrl = ''
     } = req.body;
 
-    // Check SKU duplicate
     const cleanSku = (sku || '').toUpperCase().trim();
-    const existing = await Product.findOne({ sku: cleanSku, isDeleted: false });
+    const existing = await productRepository.findProductBySku(cleanSku);
     if (existing) {
       return res.status(400).json({
         success: false,
@@ -154,25 +103,25 @@ const createProduct = async (req, res, next) => {
       });
     }
 
-    const product = await Product.create({
-      name: name.trim(),
+    const product = await productRepository.createProduct({
+      name,
       sku: cleanSku,
-      category: category.trim(),
-      description: (description || '').trim(),
-      supplier: supplier || null,
-      purchaseCost: Number(purchaseCost),
-      sellingPrice: Number(sellingPrice),
-      mrp: mrp ? Number(mrp) : null,
-      stockQuantity: Number(stockQuantity),
-      lowStockThreshold: Number(lowStockThreshold),
-      unit: (unit || 'pcs').trim(),
-      imageUrl: (imageUrl || '').trim()
+      category,
+      description,
+      supplier,
+      purchaseCost,
+      sellingPrice,
+      mrp,
+      stockQuantity,
+      lowStockThreshold,
+      unit,
+      imageUrl
     });
 
-    // If initial stock is greater than 0, create OPENING_STOCK movement ledger entry
+    // If initial stock > 0, log opening stock movement
     if (product.stockQuantity > 0) {
-      await StockMovement.create({
-        product: product._id,
+      await stockMovementRepository.createMovement({
+        productId: product.id,
         movementType: 'OPENING_STOCK',
         quantityChanged: product.stockQuantity,
         balanceAfter: product.stockQuantity,
@@ -198,21 +147,7 @@ const createProduct = async (req, res, next) => {
 // @access  Private
 const updateProduct = async (req, res, next) => {
   try {
-    const {
-      name,
-      sku,
-      category,
-      description,
-      supplier,
-      purchaseCost,
-      sellingPrice,
-      mrp,
-      lowStockThreshold,
-      unit,
-      imageUrl
-    } = req.body;
-
-    const product = await Product.findById(req.params.id);
+    const product = await productRepository.getProductById(req.params.id);
     if (!product || product.isDeleted) {
       return res.status(404).json({
         success: false,
@@ -220,38 +155,25 @@ const updateProduct = async (req, res, next) => {
       });
     }
 
-    // Check duplicate SKU if changed
-    if (sku) {
-      const cleanSku = sku.toUpperCase().trim();
+    if (req.body.sku) {
+      const cleanSku = req.body.sku.toUpperCase().trim();
       if (cleanSku !== product.sku) {
-        const existing = await Product.findOne({ sku: cleanSku, _id: { $ne: product._id }, isDeleted: false });
-        if (existing) {
+        const existing = await productRepository.findProductBySku(cleanSku);
+        if (existing && existing.id !== product.id) {
           return res.status(400).json({
             success: false,
             message: `Product with SKU "${cleanSku}" already exists.`
           });
         }
-        product.sku = cleanSku;
       }
     }
 
-    if (name) product.name = name.trim();
-    if (category) product.category = category.trim();
-    if (description !== undefined) product.description = description.trim();
-    if (supplier !== undefined) product.supplier = supplier || null;
-    if (purchaseCost !== undefined) product.purchaseCost = Number(purchaseCost);
-    if (sellingPrice !== undefined) product.sellingPrice = Number(sellingPrice);
-    if (mrp !== undefined) product.mrp = mrp ? Number(mrp) : null;
-    if (lowStockThreshold !== undefined) product.lowStockThreshold = Number(lowStockThreshold);
-    if (unit) product.unit = unit.trim();
-    if (imageUrl !== undefined) product.imageUrl = imageUrl.trim();
-
-    await product.save();
+    const updated = await productRepository.updateProduct(req.params.id, req.body);
 
     res.status(200).json({
       success: true,
       message: 'Product updated successfully',
-      data: product
+      data: updated
     });
   } catch (error) {
     next(error);
@@ -263,40 +185,18 @@ const updateProduct = async (req, res, next) => {
 // @access  Private (Admin only)
 const deleteProduct = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id);
-    if (!product || product.isDeleted) {
+    const result = await productRepository.deleteProduct(req.params.id);
+    if (!result) {
       return res.status(404).json({
         success: false,
         message: 'Product not found'
       });
     }
 
-    // Check if sales or purchases reference this product
-    const [salesCount, purchaseCount] = await Promise.all([
-      Sale.countDocuments({ 'items.product': product._id }),
-      Purchase.countDocuments({ 'items.product': product._id })
-    ]);
-
-    if (salesCount > 0 || purchaseCount > 0) {
-      // Historical transactions exist: soft delete to protect historical ledger
-      product.isDeleted = true;
-      product.sku = `${product.sku}_DELETED_${Date.now()}`;
-      await product.save();
-      return res.status(200).json({
-        success: true,
-        message: 'Product has historical transactions. Soft deleted to maintain audit integrity.',
-        softDeleted: true
-      });
-    }
-
-    // If completely new and unused, remove permanently
-    await Product.findByIdAndDelete(product._id);
-    await StockMovement.deleteMany({ product: product._id });
-
     res.status(200).json({
       success: true,
-      message: 'Product deleted permanently',
-      softDeleted: false
+      message: result.message,
+      softDeleted: result.softDeleted
     });
   } catch (error) {
     next(error);
@@ -308,10 +208,10 @@ const deleteProduct = async (req, res, next) => {
 // @access  Private
 const getCategories = async (req, res, next) => {
   try {
-    const categories = await Product.distinct('category', { isDeleted: false });
+    const categories = await productRepository.getCategories();
     res.status(200).json({
       success: true,
-      data: categories.filter(Boolean).sort()
+      data: categories
     });
   } catch (error) {
     next(error);
@@ -323,15 +223,7 @@ const getCategories = async (req, res, next) => {
 // @access  Private
 const getLowStockProducts = async (req, res, next) => {
   try {
-    const products = await Product.find({
-      isDeleted: false,
-      $expr: {
-        $lte: ['$stockQuantity', '$lowStockThreshold']
-      }
-    })
-      .populate('supplier', 'name company phone')
-      .sort({ stockQuantity: 1 });
-
+    const products = await productRepository.getLowStockProducts();
     res.status(200).json({
       success: true,
       count: products.length,

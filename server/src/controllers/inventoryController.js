@@ -1,5 +1,10 @@
-const StockMovement = require('../models/StockMovement');
-const Product = require('../models/Product');
+/**
+ * StockWise / MFEF - Inventory Controller (PostgreSQL)
+ * Preserves exact API contract for /api/inventory
+ */
+
+const stockMovementRepository = require('../repositories/stockMovementRepository');
+const productRepository = require('../repositories/productRepository');
 const { adjustStockAndLog } = require('../services/stockLedgerService');
 
 // @desc    Get stock movement ledger with filters
@@ -18,57 +23,25 @@ const getMovements = async (req, res, next) => {
       limit = 30
     } = req.query;
 
-    const query = {};
-
-    if (product) {
-      query.product = product;
-    }
-
-    if (movementType && movementType !== 'ALL') {
-      query.movementType = movementType;
-    }
-
-    if (referenceType && referenceType !== 'ALL') {
-      query.referenceType = referenceType;
-    }
-
-    if (startDate || endDate) {
-      query.createdAt = {};
-      if (startDate) query.createdAt.$gte = new Date(startDate);
-      if (endDate) {
-        const eDate = new Date(endDate);
-        eDate.setHours(23, 59, 59, 999);
-        query.createdAt.$lte = eDate;
-      }
-    }
-
-    if (search.trim()) {
-      const regex = new RegExp(search.trim(), 'i');
-      query.$or = [{ referenceId: regex }, { notes: regex }];
-    }
-
-    const pageNum = parseInt(page, 10) || 1;
-    const limitNum = parseInt(limit, 10) || 30;
-    const skip = (pageNum - 1) * limitNum;
-
-    const [movements, total] = await Promise.all([
-      StockMovement.find(query)
-        .populate('product', 'name sku unit purchaseCost')
-        .populate('performedBy', 'name')
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limitNum),
-      StockMovement.countDocuments(query)
-    ]);
+    const result = await stockMovementRepository.getMovements({
+      product,
+      movementType,
+      referenceType,
+      startDate,
+      endDate,
+      search,
+      page,
+      limit
+    });
 
     res.status(200).json({
       success: true,
-      data: movements,
+      data: result.movements,
       pagination: {
-        page: pageNum,
-        limit: limitNum,
-        total,
-        pages: Math.ceil(total / limitNum) || 1
+        page: result.page,
+        limit: parseInt(limit, 10) || 30,
+        total: result.total,
+        pages: result.pages
       }
     });
   } catch (error) {
@@ -115,6 +88,9 @@ const adjustStock = async (req, res, next) => {
       }
     });
   } catch (error) {
+    if (error.message && (error.message.includes('not found') || error.message.includes('Insufficient stock'))) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
     next(error);
   }
 };
@@ -124,13 +100,7 @@ const adjustStock = async (req, res, next) => {
 // @access  Private
 const getStockAlerts = async (req, res, next) => {
   try {
-    const products = await Product.find({
-      isDeleted: false,
-      $expr: { $lte: ['$stockQuantity', '$lowStockThreshold'] }
-    })
-      .populate('supplier', 'name company phone')
-      .sort({ stockQuantity: 1 });
-
+    const products = await productRepository.getLowStockProducts();
     const outOfStock = products.filter((p) => p.stockQuantity <= 0);
     const lowStock = products.filter((p) => p.stockQuantity > 0 && p.stockQuantity <= p.lowStockThreshold);
 
@@ -154,4 +124,3 @@ module.exports = {
   adjustStock,
   getStockAlerts
 };
-
