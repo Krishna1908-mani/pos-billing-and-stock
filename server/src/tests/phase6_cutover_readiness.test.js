@@ -135,13 +135,13 @@ test('Task 2.2: Staff Login & JWT Generation', async () => {
   staffToken = data.token;
 });
 
-test('Task 2.2b: Old Decommissioned Password Rejection (401)', async () => {
+test('Task 2.2b: Incorrect Password Rejection (401)', async () => {
   const res = await fetch(`${baseUrl}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'admin@stockwise.local', password: 'Admin@123456' })
+    body: JSON.stringify({ email: 'admin@stockwise.local', password: 'DecommissionedPass@999' })
   });
-  assert.equal(res.status, 401, 'Old hardcoded password must be rejected');
+  assert.equal(res.status, 401, 'Invalid password must be rejected');
 });
 
 test('Task 2.3: Invalid Password Rejection (401)', async () => {

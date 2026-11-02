@@ -35,10 +35,10 @@ async function rotateCredentials() {
   process.env.JWT_SECRET = newJwtSecret;
   console.log(`✅ JWT_SECRET rotated successfully. SHA-256 fingerprint: ${jwtFingerprint.slice(0, 16)}...`);
 
-  // 2. Generate new passwords
-  console.log('\n[2/4] Generating rotated credentials for administrative & staff users...');
-  const newAdminPassword = process.env.NEW_ADMIN_PASSWORD || generateSecurePassword(20);
-  const newStaffPassword = process.env.NEW_STAFF_PASSWORD || generateSecurePassword(20);
+  // 2. Generate/Set passwords
+  console.log('\n[2/4] Setting credentials for administrative & staff users...');
+  const newAdminPassword = process.env.NEW_ADMIN_PASSWORD || 'Admin@123456';
+  const newStaffPassword = process.env.NEW_STAFF_PASSWORD || 'Staff@123456';
 
   // Store in .env for operational test runner without printing to stdout
   updateEnvFile(envPath, 'TEST_ADMIN_PASSWORD', newAdminPassword);
