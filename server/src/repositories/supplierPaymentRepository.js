@@ -273,3 +273,4 @@ module.exports = {
   getPayments,
   createPaymentTransaction
 };
+

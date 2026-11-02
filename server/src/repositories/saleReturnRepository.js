@@ -199,3 +199,4 @@ module.exports = {
   getReturnsBySaleId,
   createSaleReturnTransaction
 };
+

@@ -65,3 +65,4 @@ const getRestockSalesAnalytics = async ({ windowStartDate, category = null, supp
 module.exports = {
   getRestockSalesAnalytics
 };
+
