@@ -1,0 +1,631 @@
+{
+  "timestamp": "2026-11-02T05:01:43.244Z",
+  "connection": {
+    "current_user": "postgres",
+    "current_database": "postgres",
+    "session_user": "postgres",
+    "pg_version": "PostgreSQL 17.11 on aarch64-unknown-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit"
+  },
+  "rolePermissions": {},
+  "tables": {
+    "users": {
+      "exists": true,
+      "columnCount": 9,
+      "columns": [
+        "id",
+        "mongo_id",
+        "name",
+        "email",
+        "password_hash",
+        "role",
+        "is_active",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": {
+        "can_select": true,
+        "can_insert": true,
+        "can_update": true,
+        "can_delete": true
+      }
+    },
+    "suppliers": {
+      "exists": true,
+      "columnCount": 13,
+      "columns": [
+        "id",
+        "mongo_id",
+        "name",
+        "company",
+        "phone",
+        "email",
+        "address",
+        "notes",
+        "opening_balance",
+        "is_active",
+        "is_deleted",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": {
+        "can_select": true,
+        "can_insert": true,
+        "can_update": true,
+        "can_delete": true
+      }
+    },
+    "products": {
+      "exists": true,
+      "columnCount": 17,
+      "columns": [
+        "id",
+        "mongo_id",
+        "name",
+        "sku",
+        "category",
+        "description",
+        "supplier_id",
+        "purchase_cost",
+        "selling_price",
+        "mrp",
+        "stock_quantity",
+        "low_stock_threshold",
+        "unit",
+        "image_url",
+        "is_deleted",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": {
+        "can_select": true,
+        "can_insert": true,
+        "can_update": true,
+        "can_delete": true
+      }
+    },
+    "purchases": {
+      "exists": true,
+      "columnCount": 19,
+      "columns": [
+        "id",
+        "mongo_id",
+        "purchase_number",
+        "supplier_id",
+        "supplier_invoice_number",
+        "purchase_date",
+        "due_date",
+        "subtotal",
+        "discount",
+        "tax",
+        "total_amount",
+        "amount_paid",
+        "balance_due",
+        "payment_status",
+        "notes",
+        "idempotency_key",
+        "created_by",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": {
+        "can_select": true,
+        "can_insert": true,
+        "can_update": true,
+        "can_delete": true
+      }
+    },
+    "purchase_items": {
+      "exists": true,
+      "columnCount": 9,
+      "columns": [
+        "id",
+        "purchase_id",
+        "product_id",
+        "product_name",
+        "sku",
+        "quantity",
+        "unit_cost",
+        "line_total",
+        "created_at"
+      ],
+      "permissions": {
+        "can_select": true,
+        "can_insert": true,
+        "can_update": true,
+        "can_delete": true
+      }
+    },
+    "sales": {
+      "exists": true,
+      "columnCount": 21,
+      "columns": [
+        "id",
+        "mongo_id",
+        "invoice_number",
+        "customer_name",
+        "customer_phone",
+        "subtotal",
+        "discount",
+        "tax_rate",
+        "tax_amount",
+        "grand_total",
+        "total_cost",
+        "gross_profit",
+        "payment_method",
+        "amount_paid",
+        "change_due",
+        "status",
+        "idempotency_key",
+        "sold_by",
+        "sale_date",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": {
+        "can_select": true,
+        "can_insert": true,
+        "can_update": true,
+        "can_delete": true
+      }
+    },
+    "sale_items": {
+      "exists": true,
+      "columnCount": 11,
+      "columns": [
+        "id",
+        "sale_id",
+        "product_id",
+        "product_name",
+        "sku",
+        "quantity",
+        "unit_cost_snapshot",
+        "selling_price_snapshot",
+        "line_total",
+        "profit",
+        "created_at"
+      ],
+      "permissions": {
+        "can_select": true,
+        "can_insert": true,
+        "can_update": true,
+        "can_delete": true
+      }
+    },
+    "sale_returns": {
+      "exists": true,
+      "columnCount": 12,
+      "columns": [
+        "id",
+        "mongo_id",
+        "return_number",
+        "sale_id",
+        "invoice_number",
+        "refund_total",
+        "refund_method",
+        "reason",
+        "processed_by",
+        "return_date",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": {
+        "can_select": true,
+        "can_insert": true,
+        "can_update": true,
+        "can_delete": true
+      }
+    },
+    "sale_return_items": {
+      "exists": true,
+      "columnCount": 9,
+      "columns": [
+        "id",
+        "return_id",
+        "product_id",
+        "product_name",
+        "sku",
+        "quantity",
+        "refund_amount",
+        "unit_cost_snapshot",
+        "created_at"
+      ],
+      "permissions": {
+        "can_select": true,
+        "can_insert": true,
+        "can_update": true,
+        "can_delete": true
+      }
+    },
+    "stock_movements": {
+      "exists": true,
+      "columnCount": 11,
+      "columns": [
+        "id",
+        "mongo_id",
+        "product_id",
+        "movement_type",
+        "quantity_changed",
+        "balance_after",
+        "reference_type",
+        "reference_id",
+        "notes",
+        "performed_by",
+        "created_at"
+      ],
+      "permissions": {
+        "can_select": true,
+        "can_insert": true,
+        "can_update": true,
+        "can_delete": true
+      }
+    },
+    "supplier_payments": {
+      "exists": true,
+      "columnCount": 12,
+      "columns": [
+        "id",
+        "mongo_id",
+        "payment_number",
+        "supplier_id",
+        "purchase_id",
+        "amount",
+        "payment_date",
+        "payment_method",
+        "reference_number",
+        "notes",
+        "recorded_by",
+        "created_at"
+      ],
+      "permissions": {
+        "can_select": true,
+        "can_insert": true,
+        "can_update": true,
+        "can_delete": true
+      }
+    }
+  },
+  "views": {
+    "view_supplier_balances": {
+      "exists": true,
+      "queryable": true
+    },
+    "view_product_details": {
+      "exists": true,
+      "queryable": true
+    },
+    "view_inventory_reconciliation": {
+      "exists": true,
+      "queryable": true
+    }
+  },
+  "foreignKeys": [
+    {
+      "source_table": "products",
+      "fk_column": "supplier_id",
+      "target_table": "suppliers",
+      "pk_column": "id",
+      "delete_rule": "SET NULL"
+    },
+    {
+      "source_table": "purchase_items",
+      "fk_column": "product_id",
+      "target_table": "products",
+      "pk_column": "id",
+      "delete_rule": "RESTRICT"
+    },
+    {
+      "source_table": "purchase_items",
+      "fk_column": "purchase_id",
+      "target_table": "purchases",
+      "pk_column": "id",
+      "delete_rule": "CASCADE"
+    },
+    {
+      "source_table": "purchases",
+      "fk_column": "created_by",
+      "target_table": "users",
+      "pk_column": "id",
+      "delete_rule": "SET NULL"
+    },
+    {
+      "source_table": "purchases",
+      "fk_column": "supplier_id",
+      "target_table": "suppliers",
+      "pk_column": "id",
+      "delete_rule": "RESTRICT"
+    },
+    {
+      "source_table": "sale_items",
+      "fk_column": "product_id",
+      "target_table": "products",
+      "pk_column": "id",
+      "delete_rule": "RESTRICT"
+    },
+    {
+      "source_table": "sale_items",
+      "fk_column": "sale_id",
+      "target_table": "sales",
+      "pk_column": "id",
+      "delete_rule": "CASCADE"
+    },
+    {
+      "source_table": "sale_return_items",
+      "fk_column": "product_id",
+      "target_table": "products",
+      "pk_column": "id",
+      "delete_rule": "RESTRICT"
+    },
+    {
+      "source_table": "sale_return_items",
+      "fk_column": "return_id",
+      "target_table": "sale_returns",
+      "pk_column": "id",
+      "delete_rule": "CASCADE"
+    },
+    {
+      "source_table": "sale_returns",
+      "fk_column": "processed_by",
+      "target_table": "users",
+      "pk_column": "id",
+      "delete_rule": "SET NULL"
+    },
+    {
+      "source_table": "sale_returns",
+      "fk_column": "sale_id",
+      "target_table": "sales",
+      "pk_column": "id",
+      "delete_rule": "RESTRICT"
+    },
+    {
+      "source_table": "sales",
+      "fk_column": "sold_by",
+      "target_table": "users",
+      "pk_column": "id",
+      "delete_rule": "SET NULL"
+    },
+    {
+      "source_table": "stock_movements",
+      "fk_column": "performed_by",
+      "target_table": "users",
+      "pk_column": "id",
+      "delete_rule": "SET NULL"
+    },
+    {
+      "source_table": "stock_movements",
+      "fk_column": "product_id",
+      "target_table": "products",
+      "pk_column": "id",
+      "delete_rule": "RESTRICT"
+    },
+    {
+      "source_table": "supplier_payments",
+      "fk_column": "purchase_id",
+      "target_table": "purchases",
+      "pk_column": "id",
+      "delete_rule": "SET NULL"
+    },
+    {
+      "source_table": "supplier_payments",
+      "fk_column": "recorded_by",
+      "target_table": "users",
+      "pk_column": "id",
+      "delete_rule": "SET NULL"
+    },
+    {
+      "source_table": "supplier_payments",
+      "fk_column": "supplier_id",
+      "target_table": "suppliers",
+      "pk_column": "id",
+      "delete_rule": "RESTRICT"
+    }
+  ],
+  "checkConstraints": [
+    {
+      "table_name": "products",
+      "constraint_name": "products_low_stock_threshold_check",
+      "constraint_definition": "CHECK ((low_stock_threshold >= 0))"
+    },
+    {
+      "table_name": "products",
+      "constraint_name": "products_mrp_check",
+      "constraint_definition": "CHECK (((mrp IS NULL) OR (mrp >= (0)::numeric)))"
+    },
+    {
+      "table_name": "products",
+      "constraint_name": "products_purchase_cost_check",
+      "constraint_definition": "CHECK ((purchase_cost >= (0)::numeric))"
+    },
+    {
+      "table_name": "products",
+      "constraint_name": "products_selling_price_check",
+      "constraint_definition": "CHECK ((selling_price >= (0)::numeric))"
+    },
+    {
+      "table_name": "products",
+      "constraint_name": "products_stock_quantity_check",
+      "constraint_definition": "CHECK ((stock_quantity >= 0))"
+    },
+    {
+      "table_name": "purchase_items",
+      "constraint_name": "purchase_items_line_total_check",
+      "constraint_definition": "CHECK ((line_total >= (0)::numeric))"
+    },
+    {
+      "table_name": "purchase_items",
+      "constraint_name": "purchase_items_quantity_check",
+      "constraint_definition": "CHECK ((quantity >= 1))"
+    },
+    {
+      "table_name": "purchase_items",
+      "constraint_name": "purchase_items_unit_cost_check",
+      "constraint_definition": "CHECK ((unit_cost >= (0)::numeric))"
+    },
+    {
+      "table_name": "purchases",
+      "constraint_name": "purchases_amount_paid_check",
+      "constraint_definition": "CHECK ((amount_paid >= (0)::numeric))"
+    },
+    {
+      "table_name": "purchases",
+      "constraint_name": "purchases_balance_due_check",
+      "constraint_definition": "CHECK ((balance_due >= (0)::numeric))"
+    },
+    {
+      "table_name": "purchases",
+      "constraint_name": "purchases_discount_check",
+      "constraint_definition": "CHECK ((discount >= (0)::numeric))"
+    },
+    {
+      "table_name": "purchases",
+      "constraint_name": "purchases_payment_status_check",
+      "constraint_definition": "CHECK (((payment_status)::text = ANY ((ARRAY['PAID'::character varying, 'PARTIAL'::character varying, 'UNPAID'::character varying])::text[])))"
+    },
+    {
+      "table_name": "purchases",
+      "constraint_name": "purchases_subtotal_check",
+      "constraint_definition": "CHECK ((subtotal >= (0)::numeric))"
+    },
+    {
+      "table_name": "purchases",
+      "constraint_name": "purchases_tax_check",
+      "constraint_definition": "CHECK ((tax >= (0)::numeric))"
+    },
+    {
+      "table_name": "purchases",
+      "constraint_name": "purchases_total_amount_check",
+      "constraint_definition": "CHECK ((total_amount >= (0)::numeric))"
+    },
+    {
+      "table_name": "sale_items",
+      "constraint_name": "sale_items_line_total_check",
+      "constraint_definition": "CHECK ((line_total >= (0)::numeric))"
+    },
+    {
+      "table_name": "sale_items",
+      "constraint_name": "sale_items_quantity_check",
+      "constraint_definition": "CHECK ((quantity >= 1))"
+    },
+    {
+      "table_name": "sale_items",
+      "constraint_name": "sale_items_selling_price_snapshot_check",
+      "constraint_definition": "CHECK ((selling_price_snapshot >= (0)::numeric))"
+    },
+    {
+      "table_name": "sale_items",
+      "constraint_name": "sale_items_unit_cost_snapshot_check",
+      "constraint_definition": "CHECK ((unit_cost_snapshot >= (0)::numeric))"
+    },
+    {
+      "table_name": "sale_return_items",
+      "constraint_name": "sale_return_items_quantity_check",
+      "constraint_definition": "CHECK ((quantity >= 1))"
+    },
+    {
+      "table_name": "sale_return_items",
+      "constraint_name": "sale_return_items_refund_amount_check",
+      "constraint_definition": "CHECK ((refund_amount >= (0)::numeric))"
+    },
+    {
+      "table_name": "sale_return_items",
+      "constraint_name": "sale_return_items_unit_cost_snapshot_check",
+      "constraint_definition": "CHECK ((unit_cost_snapshot >= (0)::numeric))"
+    },
+    {
+      "table_name": "sale_returns",
+      "constraint_name": "sale_returns_refund_method_check",
+      "constraint_definition": "CHECK (((refund_method)::text = ANY ((ARRAY['CASH'::character varying, 'ORIGINAL_PAYMENT'::character varying, 'STORE_CREDIT'::character varying])::text[])))"
+    },
+    {
+      "table_name": "sale_returns",
+      "constraint_name": "sale_returns_refund_total_check",
+      "constraint_definition": "CHECK ((refund_total >= (0)::numeric))"
+    },
+    {
+      "table_name": "sales",
+      "constraint_name": "sales_amount_paid_check",
+      "constraint_definition": "CHECK ((amount_paid >= (0)::numeric))"
+    },
+    {
+      "table_name": "sales",
+      "constraint_name": "sales_change_due_check",
+      "constraint_definition": "CHECK ((change_due >= (0)::numeric))"
+    },
+    {
+      "table_name": "sales",
+      "constraint_name": "sales_discount_check",
+      "constraint_definition": "CHECK ((discount >= (0)::numeric))"
+    },
+    {
+      "table_name": "sales",
+      "constraint_name": "sales_grand_total_check",
+      "constraint_definition": "CHECK ((grand_total >= (0)::numeric))"
+    },
+    {
+      "table_name": "sales",
+      "constraint_name": "sales_payment_method_check",
+      "constraint_definition": "CHECK (((payment_method)::text = ANY ((ARRAY['CASH'::character varying, 'CARD'::character varying, 'UPI'::character varying, 'BANK_TRANSFER'::character varying])::text[])))"
+    },
+    {
+      "table_name": "sales",
+      "constraint_name": "sales_status_check",
+      "constraint_definition": "CHECK (((status)::text = ANY ((ARRAY['COMPLETED'::character varying, 'CANCELLED'::character varying, 'RETURNED'::character varying])::text[])))"
+    },
+    {
+      "table_name": "sales",
+      "constraint_name": "sales_subtotal_check",
+      "constraint_definition": "CHECK ((subtotal >= (0)::numeric))"
+    },
+    {
+      "table_name": "sales",
+      "constraint_name": "sales_tax_amount_check",
+      "constraint_definition": "CHECK ((tax_amount >= (0)::numeric))"
+    },
+    {
+      "table_name": "sales",
+      "constraint_name": "sales_tax_rate_check",
+      "constraint_definition": "CHECK ((tax_rate >= (0)::numeric))"
+    },
+    {
+      "table_name": "sales",
+      "constraint_name": "sales_total_cost_check",
+      "constraint_definition": "CHECK ((total_cost >= (0)::numeric))"
+    },
+    {
+      "table_name": "stock_movements",
+      "constraint_name": "stock_movements_balance_after_check",
+      "constraint_definition": "CHECK ((balance_after >= 0))"
+    },
+    {
+      "table_name": "stock_movements",
+      "constraint_name": "stock_movements_movement_type_check",
+      "constraint_definition": "CHECK (((movement_type)::text = ANY ((ARRAY['OPENING_STOCK'::character varying, 'PURCHASE_INWARD'::character varying, 'SALE_OUTWARD'::character varying, 'SALE_RETURN'::character varying, 'ADJUSTMENT_ADD'::character varying, 'ADJUSTMENT_SUB'::character varying])::text[])))"
+    },
+    {
+      "table_name": "stock_movements",
+      "constraint_name": "stock_movements_reference_type_check",
+      "constraint_definition": "CHECK (((reference_type)::text = ANY ((ARRAY['PURCHASE'::character varying, 'SALE'::character varying, 'RETURN'::character varying, 'MANUAL_ADJUSTMENT'::character varying, 'INITIAL_IMPORT'::character varying])::text[])))"
+    },
+    {
+      "table_name": "supplier_payments",
+      "constraint_name": "supplier_payments_amount_check",
+      "constraint_definition": "CHECK ((amount >= 0.01))"
+    },
+    {
+      "table_name": "supplier_payments",
+      "constraint_name": "supplier_payments_payment_method_check",
+      "constraint_definition": "CHECK (((payment_method)::text = ANY ((ARRAY['CASH'::character varying, 'BANK_TRANSFER'::character varying, 'CHEQUE'::character varying, 'UPI'::character varying, 'CARD'::character varying])::text[])))"
+    },
+    {
+      "table_name": "suppliers",
+      "constraint_name": "suppliers_opening_balance_check",
+      "constraint_definition": "CHECK ((opening_balance >= (0)::numeric))"
+    },
+    {
+      "table_name": "users",
+      "constraint_name": "users_role_check",
+      "constraint_definition": "CHECK (((role)::text = ANY ((ARRAY['admin'::character varying, 'staff'::character varying])::text[])))"
+    }
+  ],
+  "indexesCount": 66,
+  "overallStatus": "SUCCESS_VERIFIED"
+}
