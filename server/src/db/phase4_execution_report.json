@@ -1,0 +1,171 @@
+{
+  "timestamp": "2026-11-02T06:38:26.677Z",
+  "status": "SUCCESS",
+  "transactionState": "COMMITTED",
+  "sourceSnapshot": {
+    "users": 2,
+    "suppliers": 4,
+    "products": 12,
+    "purchases": 3,
+    "purchase_items": 6,
+    "sales": 39,
+    "sale_items": 78,
+    "supplier_payments": 2,
+    "legacy_stock_movements": 41
+  },
+  "targetCounts": {
+    "users": 2,
+    "suppliers": 4,
+    "products": 12,
+    "purchases": 3,
+    "purchase_items": 6,
+    "sales": 39,
+    "sale_items": 78,
+    "supplier_payments": 2,
+    "legacy_stock_movements": 41,
+    "stock_movements": 12,
+    "sale_returns": 0,
+    "sale_return_items": 0
+  },
+  "totalCommittedRows": 199,
+  "financialReconciliation": {
+    "salesGrandTotal": {
+      "expected": 99531.6,
+      "actual": 99531.6
+    },
+    "salesGrossProfit": {
+      "expected": 45301.6,
+      "actual": 45301.6
+    },
+    "purchasesTotal": {
+      "expected": 72265,
+      "actual": 72265
+    },
+    "purchasesPaid": {
+      "expected": 52260,
+      "actual": 52260
+    },
+    "purchasesBalance": {
+      "expected": 20005,
+      "actual": 20005
+    },
+    "supplierPayments": {
+      "expected": 52260,
+      "actual": 52260
+    },
+    "totalStockUnits": {
+      "expected": 354,
+      "actual": 354
+    },
+    "totalStockValuation": {
+      "expected": 126240,
+      "actual": 126240
+    }
+  },
+  "supplierBalanceReconciliation": {
+    "expected": 45205,
+    "actual": 45205
+  },
+  "inventoryReconciliation": [
+    {
+      "sku": "CARE-DT-302",
+      "name": "Biodegradable Laundry Detergent 2L",
+      "recorded_stock": 22,
+      "ledger_stock": "22",
+      "stock_discrepancy": "0",
+      "audit_status": "BALANCED"
+    },
+    {
+      "sku": "CARE-FW-301",
+      "name": "Natural Tea Tree Face Wash 150ml",
+      "recorded_stock": 38,
+      "ledger_stock": "38",
+      "stock_discrepancy": "0",
+      "audit_status": "BALANCED"
+    },
+    {
+      "sku": "ELEC-CB-003",
+      "name": "Braided Type-C Fast Cable 1.5m",
+      "recorded_stock": 0,
+      "ledger_stock": "0",
+      "stock_discrepancy": "0",
+      "audit_status": "BALANCED"
+    },
+    {
+      "sku": "ELEC-EP-001",
+      "name": "Wireless Bluetooth Earbuds Pro",
+      "recorded_stock": 42,
+      "ledger_stock": "42",
+      "stock_discrepancy": "0",
+      "audit_status": "BALANCED"
+    },
+    {
+      "sku": "ELEC-FT-004",
+      "name": "Smart Fitness Tracker Band 5",
+      "recorded_stock": 18,
+      "ledger_stock": "18",
+      "stock_discrepancy": "0",
+      "audit_status": "BALANCED"
+    },
+    {
+      "sku": "ELEC-PB-002",
+      "name": "Fast Charging Power Bank 20000mAh",
+      "recorded_stock": 8,
+      "ledger_stock": "8",
+      "stock_discrepancy": "0",
+      "audit_status": "BALANCED"
+    },
+    {
+      "sku": "FMCG-CF-104",
+      "name": "Artisan Dark Roast Coffee Beans 250g",
+      "recorded_stock": 28,
+      "ledger_stock": "28",
+      "stock_discrepancy": "0",
+      "audit_status": "BALANCED"
+    },
+    {
+      "sku": "FMCG-NT-103",
+      "name": "Roasted California Almonds 500g",
+      "recorded_stock": 7,
+      "ledger_stock": "7",
+      "stock_discrepancy": "0",
+      "audit_status": "BALANCED"
+    },
+    {
+      "sku": "FMCG-OL-102",
+      "name": "Cold Pressed Virgin Coconut Oil 1L",
+      "recorded_stock": 32,
+      "ledger_stock": "32",
+      "stock_discrepancy": "0",
+      "audit_status": "BALANCED"
+    },
+    {
+      "sku": "FMCG-RC-101",
+      "name": "Organic Basmati Rice 5kg",
+      "recorded_stock": 65,
+      "ledger_stock": "65",
+      "stock_discrepancy": "0",
+      "audit_status": "BALANCED"
+    },
+    {
+      "sku": "STAT-JN-201",
+      "name": "Hardbound Executive Journal A5",
+      "recorded_stock": 50,
+      "ledger_stock": "50",
+      "stock_discrepancy": "0",
+      "audit_status": "BALANCED"
+    },
+    {
+      "sku": "STAT-PN-202",
+      "name": "Precision Metal Rollerball Pen (Pack of 3)",
+      "recorded_stock": 44,
+      "ledger_stock": "44",
+      "stock_discrepancy": "0",
+      "audit_status": "BALANCED"
+    }
+  ],
+  "foreignKeyIntegrity": "VERIFIED",
+  "duplicateCheck": "PASSED",
+  "deletionProtection": "VERIFIED",
+  "warnings": []
+}
