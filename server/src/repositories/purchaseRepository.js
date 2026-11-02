@@ -159,7 +159,8 @@ const getPurchases = async ({
   };
 };
 
-const getPurchaseById = async (idOrMongoId) => {
+const getPurchaseById = async (idOrMongoId, clientInstance = null) => {
+  const runner = clientInstance || { query };
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrMongoId);
   const whereClause = isUUID ? `pu.id = $1` : `pu.mongo_id = $1 OR pu.purchase_number = $1 OR pu.id::text = $1`;
 
@@ -175,12 +176,12 @@ const getPurchaseById = async (idOrMongoId) => {
     LEFT JOIN public.users u ON u.id = pu.created_by
     WHERE ${whereClause} LIMIT 1;
   `;
-  const res = await query(sql, [idOrMongoId]);
+  const res = await runner.query(sql, [idOrMongoId]);
   if (!res.rows[0]) return null;
 
   const [itemsRes, paymentsRes] = await Promise.all([
-    query(`SELECT * FROM public.purchase_items WHERE purchase_id = $1;`, [res.rows[0].id]),
-    query(`SELECT * FROM public.supplier_payments WHERE purchase_id = $1 ORDER BY payment_date DESC;`, [res.rows[0].id])
+    runner.query(`SELECT * FROM public.purchase_items WHERE purchase_id = $1;`, [res.rows[0].id]),
+    runner.query(`SELECT * FROM public.supplier_payments WHERE purchase_id = $1 ORDER BY payment_date DESC;`, [res.rows[0].id])
   ]);
 
   return formatPurchase(res.rows[0], itemsRes.rows, paymentsRes.rows);
@@ -329,7 +330,7 @@ const createPurchaseTransaction = async ({
       ]);
     }
 
-    return getPurchaseById(purchase.id);
+    return getPurchaseById(purchase.id, client);
   });
 };
 

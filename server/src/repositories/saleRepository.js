@@ -146,7 +146,8 @@ const getSales = async ({
   };
 };
 
-const getSaleById = async (idOrInvoice) => {
+const getSaleById = async (idOrInvoice, clientInstance = null) => {
+  const runner = clientInstance || { query };
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrInvoice);
   const whereClause = isUUID ? `s.id = $1` : `s.mongo_id = $1 OR s.invoice_number = $1 OR s.id::text = $1`;
 
@@ -158,10 +159,10 @@ const getSaleById = async (idOrInvoice) => {
     LEFT JOIN public.users u ON u.id = s.sold_by
     WHERE ${whereClause} LIMIT 1;
   `;
-  const res = await query(sql, [idOrInvoice]);
+  const res = await runner.query(sql, [idOrInvoice]);
   if (!res.rows[0]) return null;
 
-  const itemsRes = await query(`
+  const itemsRes = await runner.query(`
     SELECT si.*, p.unit as product_unit, p.image_url as product_image
     FROM public.sale_items si
     LEFT JOIN public.products p ON p.id = si.product_id
@@ -307,7 +308,7 @@ const createSaleTransaction = async ({
       ]);
     }
 
-    return getSaleById(sale.id);
+    return getSaleById(sale.id, client);
   });
 };
 
