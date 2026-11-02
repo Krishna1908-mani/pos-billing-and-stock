@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const { Pool } = require('pg');
 
@@ -12,13 +13,23 @@ const isConfigured = Boolean(
   !databaseUrl.includes('YOUR_PASSWORD')
 );
 
+// Resolve Supabase Root/Bundle CA Certificate for strict TLS verification
+const caCertPath = process.env.SUPABASE_SSL_CA_PATH || path.resolve(__dirname, '../../certs/supabase-ca-bundle.pem');
+let sslConfig = {
+  rejectUnauthorized: true
+};
+
+if (fs.existsSync(caCertPath)) {
+  sslConfig.ca = fs.readFileSync(caCertPath, 'utf8');
+} else if (process.env.SUPABASE_SSL_CA) {
+  sslConfig.ca = process.env.SUPABASE_SSL_CA;
+}
+
 if (databaseUrl) {
   try {
     pool = new Pool({
       connectionString: databaseUrl,
-      ssl: {
-        rejectUnauthorized: false
-      },
+      ssl: sslConfig,
       connectionTimeoutMillis: 5000,
       idleTimeoutMillis: 30000,
       max: 10

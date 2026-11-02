@@ -105,10 +105,11 @@ test.after(async () => {
 // TASK 2: AUTHENTICATION & ACCESS CONTROL
 // ==========================================
 test('Task 2.1: Admin Login & JWT Generation', async () => {
+  const adminPassword = process.env.TEST_ADMIN_PASSWORD;
   const res = await fetch(`${baseUrl}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'admin@stockwise.local', password: 'Admin@123456' })
+    body: JSON.stringify({ email: 'admin@stockwise.local', password: adminPassword })
   });
   const data = await res.json();
   assert.equal(res.status, 200);
@@ -120,10 +121,11 @@ test('Task 2.1: Admin Login & JWT Generation', async () => {
 });
 
 test('Task 2.2: Staff Login & JWT Generation', async () => {
+  const staffPassword = process.env.TEST_STAFF_PASSWORD;
   const res = await fetch(`${baseUrl}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'staff@stockwise.local', password: 'Staff@123456' })
+    body: JSON.stringify({ email: 'staff@stockwise.local', password: staffPassword })
   });
   const data = await res.json();
   assert.equal(res.status, 200);
@@ -131,6 +133,15 @@ test('Task 2.2: Staff Login & JWT Generation', async () => {
   assert.ok(data.token);
   assert.equal(data.user.role, 'staff');
   staffToken = data.token;
+});
+
+test('Task 2.2b: Old Decommissioned Password Rejection (401)', async () => {
+  const res = await fetch(`${baseUrl}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'admin@stockwise.local', password: 'Admin@123456' })
+  });
+  assert.equal(res.status, 401, 'Old hardcoded password must be rejected');
 });
 
 test('Task 2.3: Invalid Password Rejection (401)', async () => {

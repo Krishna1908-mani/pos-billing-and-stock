@@ -116,7 +116,8 @@ async function runIsolatedRestoreVerification() {
       throw new Error('Admin user not found in restored database');
     }
     const admin = userRes.rows[0];
-    const isPasswordValid = await bcrypt.compare('Admin@123456', admin.password_hash);
+    const adminPass = process.env.TEST_ADMIN_PASSWORD;
+    const isPasswordValid = await bcrypt.compare(adminPass, admin.password_hash);
     if (!isPasswordValid) {
       throw new Error('Password verification failed on restored admin record');
     }

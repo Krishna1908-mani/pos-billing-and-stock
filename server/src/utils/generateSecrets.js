@@ -18,11 +18,12 @@ function updateEnvFile(targetEnvPath, key, value) {
     content = fs.readFileSync(targetEnvPath, 'utf8');
   }
 
+  const safeVal = `"${String(value).replace(/"/g, '\\"')}"`;
   const regex = new RegExp(`^${key}=.*$`, 'm');
   if (regex.test(content)) {
-    content = content.replace(regex, `${key}=${value}`);
+    content = content.replace(regex, `${key}=${safeVal}`);
   } else {
-    content += (content.endsWith('\n') ? '' : '\n') + `${key}=${value}\n`;
+    content += (content.endsWith('\n') ? '' : '\n') + `${key}=${safeVal}\n`;
   }
 
   fs.writeFileSync(targetEnvPath, content, { encoding: 'utf8', mode: 0o600 });
@@ -60,3 +61,4 @@ if (require.main === module) {
 }
 
 module.exports = { generateSecureSecret, updateEnvFile };
+
