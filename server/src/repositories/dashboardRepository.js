@@ -100,7 +100,8 @@ const getDashboardMetrics = async ({ timeRange = '30d' } = {}) => {
     query(`
       SELECT 
         pu.id, pu.purchase_number as "purchaseNumber",
-        pu.total_amount as "totalAmount", pu.payment_status as "paymentStatus",
+        pu.total_amount as "totalAmount", pu.balance_due as "balanceDue",
+        pu.payment_status as "paymentStatus",
         pu.purchase_date as "purchaseDate", s.company as "supplierCompany"
       FROM public.purchases pu
       LEFT JOIN public.suppliers s ON s.id = pu.supplier_id
@@ -170,12 +171,16 @@ const getDashboardMetrics = async ({ timeRange = '30d' } = {}) => {
       sales: recentSalesRes.rows.map(r => ({
         ...r,
         _id: r.id,
-        grandTotal: parseFloat(r.grandTotal)
+        grandTotal: parseFloat(r.grandTotal || 0)
       })),
       purchases: recentPurchasesRes.rows.map(r => ({
         ...r,
         _id: r.id,
-        totalAmount: parseFloat(r.totalAmount)
+        totalAmount: parseFloat(r.totalAmount || 0),
+        balanceDue: parseFloat(r.balanceDue || 0),
+        supplier: {
+          company: r.supplierCompany || 'Supplier'
+        }
       }))
     },
     alerts

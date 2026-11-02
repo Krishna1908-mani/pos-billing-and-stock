@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
+import ErrorBoundary from './ErrorBoundary';
 
 const Layout = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -20,7 +21,9 @@ const Layout = () => {
         <Navbar isCollapsed={isCollapsed} />
 
         <main className="flex-1 p-6 md:p-8 mt-16 max-w-7xl w-full mx-auto">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
     </div>

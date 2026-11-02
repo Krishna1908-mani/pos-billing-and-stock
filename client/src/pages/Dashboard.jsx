@@ -197,7 +197,7 @@ const Dashboard = () => {
       {/* Recharts Analytics Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Sales & Profit Trend */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm min-w-0">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-base font-semibold text-slate-900">Revenue & Gross Profit Trend</h3>
@@ -222,7 +222,7 @@ const Dashboard = () => {
                   <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#64748b' }} />
                   <YAxis tick={{ fontSize: 11, fill: '#64748b' }} />
                   <Tooltip
-                    formatter={(val) => [`₹${Number(val).toLocaleString('en-IN')}`, '']}
+                    formatter={(val) => [`₹${Number(val || 0).toLocaleString('en-IN')}`, '']}
                     contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}
                   />
                   <Legend />
@@ -255,7 +255,7 @@ const Dashboard = () => {
         </div>
 
         {/* Top Selling Products */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm min-w-0">
           <div className="mb-4">
             <h3 className="text-base font-semibold text-slate-900">Top Velocity Products</h3>
             <p className="text-xs text-slate-500">Highest revenue contributors</p>
@@ -321,14 +321,14 @@ const Dashboard = () => {
               <tbody className="divide-y divide-slate-100">
                 {(recent.sales || []).map((sale) => (
                   <tr
-                    key={sale._id}
+                    key={sale._id || sale.id}
                     className="hover:bg-slate-50/80 transition-colors cursor-pointer"
                     onClick={() => navigate(`/sales/${sale.invoiceNumber}`)}
                   >
                     <td className="py-2.5 px-3 font-semibold text-indigo-600">{sale.invoiceNumber}</td>
-                    <td className="py-2.5 px-3 text-slate-700">{sale.customerName}</td>
-                    <td className="py-2.5 px-3 font-medium text-slate-900">₹{sale.grandTotal.toFixed(2)}</td>
-                    <td className="py-2.5 px-3 text-slate-600">{sale.paymentMethod}</td>
+                    <td className="py-2.5 px-3 text-slate-700">{sale.customerName || 'Walk-in Customer'}</td>
+                    <td className="py-2.5 px-3 font-medium text-slate-900">₹{Number(sale.grandTotal || 0).toFixed(2)}</td>
+                    <td className="py-2.5 px-3 text-slate-600">{sale.paymentMethod || 'CASH'}</td>
                     <td className="py-2.5 px-3">
                       <StatusBadge status={sale.status} type="sale" />
                     </td>
@@ -368,14 +368,14 @@ const Dashboard = () => {
               <tbody className="divide-y divide-slate-100">
                 {(recent.purchases || []).map((p) => (
                   <tr
-                    key={p._id}
+                    key={p._id || p.id}
                     className="hover:bg-slate-50/80 transition-colors cursor-pointer"
-                    onClick={() => navigate(`/purchases/${p._id}`)}
+                    onClick={() => navigate(`/purchases/${p._id || p.id}`)}
                   >
                     <td className="py-2.5 px-3 font-semibold text-indigo-600">{p.purchaseNumber}</td>
-                    <td className="py-2.5 px-3 text-slate-700">{p.supplier?.company || 'Supplier'}</td>
-                    <td className="py-2.5 px-3 font-medium text-slate-900">₹{p.totalAmount.toFixed(2)}</td>
-                    <td className="py-2.5 px-3 font-medium text-rose-600">₹{p.balanceDue.toFixed(2)}</td>
+                    <td className="py-2.5 px-3 text-slate-700">{p.supplier?.company || p.supplierCompany || 'Supplier'}</td>
+                    <td className="py-2.5 px-3 font-medium text-slate-900">₹{Number(p.totalAmount || 0).toFixed(2)}</td>
+                    <td className="py-2.5 px-3 font-medium text-rose-600">₹{Number(p.balanceDue || 0).toFixed(2)}</td>
                     <td className="py-2.5 px-3">
                       <StatusBadge status={p.paymentStatus} type="payment" />
                     </td>
