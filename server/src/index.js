@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 
 const connectDB = require('./config/db');
 const { isSupabaseConfigured } = require('./config/supabase');
+const { testPostgresConnection, isPostgresConfigured } = require('./config/postgres');
 const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimiter');
 
@@ -53,9 +54,21 @@ app.get('/api/health', (req, res) => {
     status: 'UP',
     system: 'StockWise Inventory & Sales Intelligence System',
     timestamp: new Date().toISOString(),
-    database: mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED',
-    supabase: isSupabaseConfigured() ? 'CONFIGURED' : 'PENDING_KEYS',
+    databases: {
+      mongodb: mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED',
+      postgres: isPostgresConfigured() ? 'CONFIGURED' : 'PENDING_CONFIG'
+    },
     uptimeSeconds: Math.floor(process.uptime())
+  });
+});
+
+// Dedicated PostgreSQL health check endpoint
+app.get('/api/health/postgres', async (req, res) => {
+  const result = await testPostgresConnection();
+  const statusCode = result.connected ? 200 : (result.configured ? 503 : 200);
+  res.status(statusCode).json({
+    success: result.connected,
+    postgres: result
   });
 });
 
