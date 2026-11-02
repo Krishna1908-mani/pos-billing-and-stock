@@ -51,13 +51,28 @@ app.use('/api', apiLimiter);
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
   const pgCheck = await testPostgresConnection();
-  res.status(200).json({
-    status: 'UP',
+  const isPostgresHealthy = Boolean(pgCheck && pgCheck.connected);
+  const mongoStatus = mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED';
+
+  const statusCode = isPostgresHealthy ? 200 : 503;
+  res.status(statusCode).json({
+    status: isPostgresHealthy ? 'UP' : 'DEGRADED',
     system: 'StockWise Inventory & Sales Intelligence System',
     timestamp: new Date().toISOString(),
+    primaryDatastore: 'PostgreSQL',
     databases: {
-      mongodb: mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED',
-      postgres: pgCheck.connected ? 'CONNECTED' : (isPostgresConfigured() ? 'ERROR' : 'PENDING_CONFIG')
+      postgres: {
+        status: isPostgresHealthy ? 'CONNECTED' : (isPostgresConfigured() ? 'ERROR' : 'PENDING_CONFIG'),
+        role: 'PRIMARY_AUTHORITATIVE',
+        database: pgCheck.database || null,
+        version: pgCheck.version || null,
+        error: isPostgresHealthy ? null : (pgCheck.message || 'Connection failed')
+      },
+      mongodb: {
+        status: mongoStatus,
+        role: 'STANDBY_ARCHIVE',
+        required: false
+      }
     },
     uptimeSeconds: Math.floor(process.uptime())
   });
@@ -66,7 +81,7 @@ app.get('/api/health', async (req, res) => {
 // Dedicated PostgreSQL health check endpoint
 app.get('/api/health/postgres', async (req, res) => {
   const result = await testPostgresConnection();
-  const statusCode = result.connected ? 200 : (result.configured ? 503 : 200);
+  const statusCode = result.connected ? 200 : 503;
   res.status(statusCode).json({
     success: result.connected,
     postgres: result
@@ -102,20 +117,34 @@ const PORT = process.env.PORT || 5000;
 let serverInstance = null;
 
 if (process.env.NODE_ENV !== 'test') {
-  Promise.all([
-    connectDB(),
-    testPostgresConnection()
-  ]).then(([mongoConn, pgStatus]) => {
-    if (pgStatus.connected) {
-      console.log(`[Supabase PostgreSQL Connected] Database: ${pgStatus.database}, Version: ${pgStatus.version}`);
-    } else {
-      console.warn(`[Supabase PostgreSQL Warning] Not connected: ${pgStatus.error}`);
+  (async () => {
+    // 1. Mandatory PostgreSQL verification - MUST block startup on failure
+    console.log('[StockWise Server] Verifying primary database connection (Supabase PostgreSQL)...');
+    const pgStatus = await testPostgresConnection();
+
+    if (!pgStatus.connected) {
+      console.error(`[FATAL] Primary PostgreSQL connection failed: ${pgStatus.message || 'Unknown database error'}`);
+      console.error('[FATAL] StockWise server startup aborted. PostgreSQL is the authoritative primary datastore.');
+      process.exit(1);
     }
+    console.log(`[Supabase PostgreSQL Connected] Database: ${pgStatus.database}, Version: ${pgStatus.version}`);
+
+    // 2. Optional MongoDB standby connection - Non-fatal
+    try {
+      await connectDB();
+    } catch (mongoErr) {
+      console.warn(`[MongoDB Warning] Standby MongoDB connection could not be established: ${mongoErr.message}`);
+      console.warn('[MongoDB Notice] Continuing normal server operation with PostgreSQL.');
+    }
+
+    // 3. Start HTTP Server
     serverInstance = app.listen(PORT, () => {
       console.log(`[StockWise Server] Running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+      console.log(`[StockWise Server] Ready for traffic. Primary datastore: PostgreSQL 17.11`);
     });
-  }).catch((err) => {
-    console.error(`[Server Startup Error]`, err);
+  })().catch((err) => {
+    console.error(`[FATAL] Unexpected startup failure:`, err);
+    process.exit(1);
   });
 
   const gracefulShutdown = async (signal) => {

@@ -401,6 +401,32 @@ LEFT JOIN (
 ) sm ON sm.product_id = p.id;
 
 -- ==============================================================================
+-- 3.4 FINANCIAL TRANSACTION DELETION PROTECTION
+-- Strictly prohibits physical DELETE on purchases, sales, and returns
+-- ==============================================================================
+CREATE OR REPLACE FUNCTION public.prevent_transaction_deletion()
+RETURNS TRIGGER AS $$
+BEGIN
+  RAISE EXCEPTION 'Physical deletion of financial transaction records (%) is prohibited. Transaction must be cancelled or voided instead.', TG_TABLE_NAME;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_prevent_sales_delete ON public.sales;
+CREATE TRIGGER trg_prevent_sales_delete
+  BEFORE DELETE ON public.sales
+  FOR EACH ROW EXECUTE FUNCTION public.prevent_transaction_deletion();
+
+DROP TRIGGER IF EXISTS trg_prevent_purchases_delete ON public.purchases;
+CREATE TRIGGER trg_prevent_purchases_delete
+  BEFORE DELETE ON public.purchases
+  FOR EACH ROW EXECUTE FUNCTION public.prevent_transaction_deletion();
+
+DROP TRIGGER IF EXISTS trg_prevent_sale_returns_delete ON public.sale_returns;
+CREATE TRIGGER trg_prevent_sale_returns_delete
+  BEFORE DELETE ON public.sale_returns
+  FOR EACH ROW EXECUTE FUNCTION public.prevent_transaction_deletion();
+
+-- ==============================================================================
 -- 4. PERFORMANCE & LOOKUP INDEXES
 -- ==============================================================================
 
