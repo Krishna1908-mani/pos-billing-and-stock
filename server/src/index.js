@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 
 const connectDB = require('./config/db');
+const { isSupabaseConfigured } = require('./config/supabase');
 const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimiter');
 
@@ -53,6 +54,7 @@ app.get('/api/health', (req, res) => {
     system: 'StockWise Inventory & Sales Intelligence System',
     timestamp: new Date().toISOString(),
     database: mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED',
+    supabase: isSupabaseConfigured() ? 'CONFIGURED' : 'PENDING_KEYS',
     uptimeSeconds: Math.floor(process.uptime())
   });
 });
