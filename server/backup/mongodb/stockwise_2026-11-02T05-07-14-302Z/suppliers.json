@@ -1,0 +1,58 @@
+[
+  {
+    "_id": "6ae2ee3114b8199c3d2c2bba",
+    "name": "Rajesh Sharma",
+    "company": "Apex Electronics Distribution Ltd",
+    "phone": "+91 98200 11223",
+    "email": "rajesh@apexelectronics.in",
+    "address": "Plot 45, Okhla Industrial Area Phase III, New Delhi",
+    "notes": "Leading distributor for audio, accessories, and peripheral electronics. 15-day credit terms.",
+    "openingBalance": 12500,
+    "isActive": true,
+    "__v": 0,
+    "createdAt": "2026-10-29T06:56:49.804Z",
+    "updatedAt": "2026-10-29T06:56:49.804Z"
+  },
+  {
+    "_id": "6ae2ee3114b8199c3d2c2bbb",
+    "name": "Sunita Rao",
+    "company": "FreshMart Wholesale FMCG",
+    "phone": "+91 98450 33445",
+    "email": "orders@freshmartwholesale.com",
+    "address": "B-12 APMC Market Yard, Yeshwanthpur, Bengaluru",
+    "notes": "Primary supplier for packaged groceries, beverages, and daily essentials. 7-day payment cycle.",
+    "openingBalance": 4500,
+    "isActive": true,
+    "__v": 0,
+    "createdAt": "2026-10-29T06:56:49.804Z",
+    "updatedAt": "2026-10-29T06:56:49.804Z"
+  },
+  {
+    "_id": "6ae2ee3114b8199c3d2c2bbc",
+    "name": "Vikram Mehta",
+    "company": "Prime Office Supplies & Stationery",
+    "phone": "+91 98112 55667",
+    "email": "sales@primeofficesupplies.co",
+    "address": "204 Nariman Point, Commercial Hub, Mumbai",
+    "notes": "High-margin school and stationery goods. Offers 5% discount on prompt settlement.",
+    "openingBalance": 0,
+    "isActive": true,
+    "__v": 0,
+    "createdAt": "2026-10-29T06:56:49.804Z",
+    "updatedAt": "2026-10-29T06:56:49.804Z"
+  },
+  {
+    "_id": "6ae2ee3114b8199c3d2c2bbd",
+    "name": "Ananya Deshmukh",
+    "company": "Zenith Home & Personal Care Ltd",
+    "phone": "+91 97654 77889",
+    "email": "ananya@zenithcare.in",
+    "address": "Unit 9, Bhosari MIDC, Pune",
+    "notes": "Detergents, soaps, hygiene, and kitchen essentials.",
+    "openingBalance": 8200,
+    "isActive": true,
+    "__v": 0,
+    "createdAt": "2026-10-29T06:56:49.804Z",
+    "updatedAt": "2026-10-29T06:56:49.804Z"
+  }
+]

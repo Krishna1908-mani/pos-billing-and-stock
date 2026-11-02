@@ -131,11 +131,11 @@ CREATE TRIGGER trg_purchases_updated_at
 
 -- ------------------------------------------------------------------------------
 -- Table 5: PURCHASE_ITEMS (Normalized Purchase Line Items)
--- Cascades when purchase header is deleted, RESTRICTS product deletion
+-- RESTRICTS purchase header deletion to prevent accidental loss of historical records
 -- ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.purchase_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  purchase_id UUID NOT NULL REFERENCES public.purchases(id) ON DELETE CASCADE,
+  purchase_id UUID NOT NULL REFERENCES public.purchases(id) ON DELETE RESTRICT,
   product_id UUID NOT NULL REFERENCES public.products(id) ON DELETE RESTRICT,
   product_name VARCHAR(200) NOT NULL,
   sku VARCHAR(100) NOT NULL,
@@ -183,11 +183,11 @@ CREATE TRIGGER trg_sales_updated_at
 
 -- ------------------------------------------------------------------------------
 -- Table 7: SALE_ITEMS (Normalized Sale Line Items)
--- Cascades when sale invoice header is deleted, RESTRICTS product deletion
+-- RESTRICTS sale header deletion to prevent accidental loss of historical records
 -- ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.sale_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  sale_id UUID NOT NULL REFERENCES public.sales(id) ON DELETE CASCADE,
+  sale_id UUID NOT NULL REFERENCES public.sales(id) ON DELETE RESTRICT,
   product_id UUID NOT NULL REFERENCES public.products(id) ON DELETE RESTRICT,
   product_name VARCHAR(200) NOT NULL,
   sku VARCHAR(100) NOT NULL,
@@ -227,10 +227,11 @@ CREATE TRIGGER trg_sale_returns_updated_at
 
 -- ------------------------------------------------------------------------------
 -- Table 9: SALE_RETURN_ITEMS (Normalized Return Line Items)
+-- RESTRICTS return header deletion to prevent accidental loss of historical records
 -- ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.sale_return_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  return_id UUID NOT NULL REFERENCES public.sale_returns(id) ON DELETE CASCADE,
+  return_id UUID NOT NULL REFERENCES public.sale_returns(id) ON DELETE RESTRICT,
   product_id UUID NOT NULL REFERENCES public.products(id) ON DELETE RESTRICT,
   product_name VARCHAR(200) NOT NULL,
   sku VARCHAR(100) NOT NULL,

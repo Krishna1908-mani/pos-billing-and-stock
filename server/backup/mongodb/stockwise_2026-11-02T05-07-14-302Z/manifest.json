@@ -1,0 +1,48 @@
+{
+  "database": "stockwise",
+  "timestamp": "2026-11-02T05:07:14.316Z",
+  "backupDirectory": "D:\\MFEF PROJECT\\server\\backup\\mongodb\\stockwise_2026-11-02T05-07-14-302Z",
+  "collections": {
+    "sales": {
+      "recordCount": 39,
+      "fileSize": 51170,
+      "filePath": "backup\\mongodb\\stockwise_2026-11-02T05-07-14-302Z\\sales.json"
+    },
+    "supplierpayments": {
+      "recordCount": 2,
+      "fileSize": 1058,
+      "filePath": "backup\\mongodb\\stockwise_2026-11-02T05-07-14-302Z\\supplierpayments.json"
+    },
+    "products": {
+      "recordCount": 12,
+      "fileSize": 6838,
+      "filePath": "backup\\mongodb\\stockwise_2026-11-02T05-07-14-302Z\\products.json"
+    },
+    "stockmovements": {
+      "recordCount": 41,
+      "fileSize": 18282,
+      "filePath": "backup\\mongodb\\stockwise_2026-11-02T05-07-14-302Z\\stockmovements.json"
+    },
+    "purchases": {
+      "recordCount": 3,
+      "fileSize": 3612,
+      "filePath": "backup\\mongodb\\stockwise_2026-11-02T05-07-14-302Z\\purchases.json"
+    },
+    "suppliers": {
+      "recordCount": 4,
+      "fileSize": 2040,
+      "filePath": "backup\\mongodb\\stockwise_2026-11-02T05-07-14-302Z\\suppliers.json"
+    },
+    "users": {
+      "recordCount": 2,
+      "fileSize": 682,
+      "filePath": "backup\\mongodb\\stockwise_2026-11-02T05-07-14-302Z\\users.json"
+    },
+    "salereturns": {
+      "recordCount": 0,
+      "fileSize": 2,
+      "filePath": "backup\\mongodb\\stockwise_2026-11-02T05-07-14-302Z\\salereturns.json"
+    }
+  },
+  "totalRecords": 103
+}

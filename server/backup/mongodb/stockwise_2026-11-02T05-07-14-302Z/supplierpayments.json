@@ -1,0 +1,32 @@
+[
+  {
+    "_id": "6ae2ee3114b8199c3d2c2bec",
+    "paymentNumber": "PAY-20261005-0001",
+    "supplier": "6ae2ee3114b8199c3d2c2bba",
+    "purchase": "6ae2ee3114b8199c3d2c2be2",
+    "amount": 30000,
+    "paymentDate": "2026-10-07T06:56:49.825Z",
+    "paymentMethod": "BANK_TRANSFER",
+    "referenceNumber": "NEFT-AXIS-998822",
+    "notes": "Advance part payment for electronic earbuds invoice",
+    "recordedBy": "6ae2ee3114b8199c3d2c2baa",
+    "__v": 0,
+    "createdAt": "2026-10-29T06:56:49.836Z",
+    "updatedAt": "2026-10-29T06:56:49.836Z"
+  },
+  {
+    "_id": "6ae2ee3114b8199c3d2c2bed",
+    "paymentNumber": "PAY-20261012-0002",
+    "supplier": "6ae2ee3114b8199c3d2c2bbb",
+    "purchase": "6ae2ee3114b8199c3d2c2be5",
+    "amount": 22260,
+    "paymentDate": "2026-10-13T06:56:49.825Z",
+    "paymentMethod": "UPI",
+    "referenceNumber": "UPI-HDFC-554433",
+    "notes": "Full clearance payment via UPI",
+    "recordedBy": "6ae2ee3114b8199c3d2c2baa",
+    "__v": 0,
+    "createdAt": "2026-10-29T06:56:49.836Z",
+    "updatedAt": "2026-10-29T06:56:49.836Z"
+  }
+]

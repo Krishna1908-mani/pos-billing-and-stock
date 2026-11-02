@@ -1,0 +1,24 @@
+[
+  {
+    "_id": "6ae2ee3114b8199c3d2c2baa",
+    "name": "Admin Owner",
+    "email": "admin@stockwise.local",
+    "password": "$2a$10$xD5D9wFpREZnbRWqIQo7p.cGnYYF6IrJYOs1dGGon7o9ASyyNhG6i",
+    "role": "admin",
+    "isActive": true,
+    "createdAt": "2026-10-29T06:56:49.645Z",
+    "updatedAt": "2026-10-29T06:56:49.645Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ae2ee3114b8199c3d2c2bb8",
+    "name": "Store Cashier",
+    "email": "staff@stockwise.local",
+    "password": "$2a$10$Jds7jcVnxG71G0odQ7H.TOsdBL5LTMAySxNWvE.KtCM3TGvy6iuxS",
+    "role": "staff",
+    "isActive": true,
+    "createdAt": "2026-10-29T06:56:49.732Z",
+    "updatedAt": "2026-10-29T06:56:49.732Z",
+    "__v": 0
+  }
+]
