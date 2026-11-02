@@ -1,0 +1,68 @@
+[
+  {
+    "id": "bccc3abc-110c-471b-8805-cb11b7dfa66f",
+    "purchase_id": "7efa2319-94ff-4c2d-9e85-16e6e0a33663",
+    "product_id": "fedd9657-afdb-463f-a313-768fb31ab511",
+    "product_name": "Wireless Bluetooth Earbuds Pro",
+    "sku": "ELEC-EP-001",
+    "quantity": 30,
+    "unit_cost": "850.00",
+    "line_total": "25500.00",
+    "created_at": "2026-10-29T06:56:49.830Z"
+  },
+  {
+    "id": "0b61dc72-8f6d-4f98-b712-62540944235f",
+    "purchase_id": "7efa2319-94ff-4c2d-9e85-16e6e0a33663",
+    "product_id": "c8e1ec68-c8b0-46de-9836-95a52644f3c7",
+    "product_name": "Fast Charging Power Bank 20000mAh",
+    "sku": "ELEC-PB-002",
+    "quantity": 15,
+    "unit_cost": "920.00",
+    "line_total": "13800.00",
+    "created_at": "2026-10-29T06:56:49.830Z"
+  },
+  {
+    "id": "f643316f-af5d-4457-9a42-f235ba6ddcb9",
+    "purchase_id": "f8679143-0487-4dac-b66d-c1ff7530cd15",
+    "product_id": "af2eb425-a889-4e34-9bd7-54b4dde78911",
+    "product_name": "Organic Basmati Rice 5kg",
+    "sku": "FMCG-RC-101",
+    "quantity": 40,
+    "unit_cost": "380.00",
+    "line_total": "15200.00",
+    "created_at": "2026-10-29T06:56:49.831Z"
+  },
+  {
+    "id": "888b6d35-abb6-4858-ad51-9d2f4cdc336c",
+    "purchase_id": "f8679143-0487-4dac-b66d-c1ff7530cd15",
+    "product_id": "3630d2cd-90ca-4601-a681-82b2f90e1794",
+    "product_name": "Cold Pressed Virgin Coconut Oil 1L",
+    "sku": "FMCG-OL-102",
+    "quantity": 25,
+    "unit_cost": "260.00",
+    "line_total": "6500.00",
+    "created_at": "2026-10-29T06:56:49.831Z"
+  },
+  {
+    "id": "a40b97ac-1088-41c3-8a73-2ac91f8bc41c",
+    "purchase_id": "178e0245-240b-4dba-ab18-862f4d2fe3d3",
+    "product_id": "bc661ccb-311e-4e48-88cb-c5e2526d5f3e",
+    "product_name": "Hardbound Executive Journal A5",
+    "sku": "STAT-JN-201",
+    "quantity": 35,
+    "unit_cost": "140.00",
+    "line_total": "4900.00",
+    "created_at": "2026-10-29T06:56:49.831Z"
+  },
+  {
+    "id": "607c5f52-048b-4668-9f9a-46e35da2a168",
+    "purchase_id": "178e0245-240b-4dba-ab18-862f4d2fe3d3",
+    "product_id": "17c75bdf-3ddf-4176-a256-b01c7daa8a60",
+    "product_name": "Precision Metal Rollerball Pen (Pack of 3)",
+    "sku": "STAT-PN-202",
+    "quantity": 30,
+    "unit_cost": "95.00",
+    "line_total": "2850.00",
+    "created_at": "2026-10-29T06:56:49.831Z"
+  }
+]

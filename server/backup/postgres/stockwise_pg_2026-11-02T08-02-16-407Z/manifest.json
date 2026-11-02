@@ -1,0 +1,85 @@
+{
+  "database": "postgres (Supabase PostgreSQL 17.11)",
+  "timestamp": "2026-11-02T08:02:16.416Z",
+  "backupDirectory": "D:\\MFEF PROJECT\\server\\backup\\postgres\\stockwise_pg_2026-11-02T08-02-16-407Z",
+  "tables": {
+    "users": {
+      "rowCount": 2,
+      "fileSize": 780,
+      "sha256": "b1b2c3242b5b0144cb94258b58f6b6dbad2fa03c84398a931e5dbd83027fd2e8",
+      "filePath": "backup\\postgres\\stockwise_pg_2026-11-02T08-02-16-407Z\\users.json"
+    },
+    "suppliers": {
+      "rowCount": 4,
+      "fileSize": 2340,
+      "sha256": "9173e9de8f20ef4c32f073060a158bafaeb3d0f312336ca1a629fae7056aec6e",
+      "filePath": "backup\\postgres\\stockwise_pg_2026-11-02T08-02-16-407Z\\suppliers.json"
+    },
+    "products": {
+      "rowCount": 12,
+      "fileSize": 7798,
+      "sha256": "50ab1bb7b54243abf69cede272b9d80c7968e8fa878410f2d4a2808a642911e8",
+      "filePath": "backup\\postgres\\stockwise_pg_2026-11-02T08-02-16-407Z\\products.json"
+    },
+    "purchases": {
+      "rowCount": 3,
+      "fileSize": 2337,
+      "sha256": "3a0b48e4f5fd5f122d865a48327c9232dfe86d1f920b92c00a8a0f4c943dc435",
+      "filePath": "backup\\postgres\\stockwise_pg_2026-11-02T08-02-16-407Z\\purchases.json"
+    },
+    "purchase_items": {
+      "rowCount": 6,
+      "fileSize": 2279,
+      "sha256": "eaebf103bc68d950a800219ab77e3ab8658815033b44c856d290fe5ac5a23d32",
+      "filePath": "backup\\postgres\\stockwise_pg_2026-11-02T08-02-16-407Z\\purchase_items.json"
+    },
+    "sales": {
+      "rowCount": 39,
+      "fileSize": 29079,
+      "sha256": "a4c2aa0fc70c6f6dc8dd761caf48bcae04e77e097e8900aabee33ecb77f5b1fe",
+      "filePath": "backup\\postgres\\stockwise_pg_2026-11-02T08-02-16-407Z\\sales.json"
+    },
+    "sale_items": {
+      "rowCount": 78,
+      "fileSize": 34946,
+      "sha256": "5f5b02ac459b30308da7269ce96bae0fc4f3da03e609612e42f1e1198b1449ed",
+      "filePath": "backup\\postgres\\stockwise_pg_2026-11-02T08-02-16-407Z\\sale_items.json"
+    },
+    "sale_returns": {
+      "rowCount": 0,
+      "fileSize": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "filePath": "backup\\postgres\\stockwise_pg_2026-11-02T08-02-16-407Z\\sale_returns.json"
+    },
+    "sale_return_items": {
+      "rowCount": 0,
+      "fileSize": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "filePath": "backup\\postgres\\stockwise_pg_2026-11-02T08-02-16-407Z\\sale_return_items.json"
+    },
+    "stock_movements": {
+      "rowCount": 12,
+      "fileSize": 5624,
+      "sha256": "d62aa0cc3f881a47ca7223f2b49e9b1f8eea0f6384cf197b8dc5c5883bd03883",
+      "filePath": "backup\\postgres\\stockwise_pg_2026-11-02T08-02-16-407Z\\stock_movements.json"
+    },
+    "legacy_stock_movements": {
+      "rowCount": 41,
+      "fileSize": 19512,
+      "sha256": "15628e7211eaaf477614f7be38d3c020ed9b45c598f33389e2ff1c9bd569a54f",
+      "filePath": "backup\\postgres\\stockwise_pg_2026-11-02T08-02-16-407Z\\legacy_stock_movements.json"
+    },
+    "supplier_payments": {
+      "rowCount": 2,
+      "fileSize": 1156,
+      "sha256": "3f8d447e2f9675e37bf79b0be5a52cf6fc38dd906e6ec53c6bfb23998ff4ee89",
+      "filePath": "backup\\postgres\\stockwise_pg_2026-11-02T08-02-16-407Z\\supplier_payments.json"
+    }
+  },
+  "totalRows": 199,
+  "financialFingerprints": {
+    "sumSales": 99531.6,
+    "sumPurchases": 72265,
+    "sumPayments": 52260
+  }
+}

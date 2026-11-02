@@ -99,6 +99,8 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
 // Connect DB and listen only if not imported as module in test
+let serverInstance = null;
+
 if (process.env.NODE_ENV !== 'test') {
   Promise.all([
     connectDB(),
@@ -109,12 +111,40 @@ if (process.env.NODE_ENV !== 'test') {
     } else {
       console.warn(`[Supabase PostgreSQL Warning] Not connected: ${pgStatus.error}`);
     }
-    app.listen(PORT, () => {
+    serverInstance = app.listen(PORT, () => {
       console.log(`[StockWise Server] Running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
     });
   }).catch((err) => {
     console.error(`[Server Startup Error]`, err);
   });
+
+  const gracefulShutdown = async (signal) => {
+    console.log(`[StockWise Server] ${signal} signal received. Starting graceful shutdown...`);
+    if (serverInstance) {
+      serverInstance.close(async () => {
+        console.log('[StockWise Server] HTTP server closed.');
+        try {
+          const { pool } = require('./config/postgres');
+          if (pool) {
+            await pool.end();
+            console.log('[StockWise Server] PostgreSQL connection pool drained.');
+          }
+          if (mongoose.connection.readyState === 1) {
+            await mongoose.disconnect();
+            console.log('[StockWise Server] MongoDB disconnected.');
+          }
+        } catch (cleanupErr) {
+          console.error('[StockWise Server] Error during shutdown cleanup:', cleanupErr.message);
+        }
+        process.exit(0);
+      });
+    } else {
+      process.exit(0);
+    }
+  };
+
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 }
 
 module.exports = app;

@@ -1,0 +1,62 @@
+[
+  {
+    "id": "3d5ce14f-b249-4d7f-8944-f88663d1656c",
+    "mongo_id": "6ae2ee3114b8199c3d2c2bba",
+    "name": "Rajesh Sharma",
+    "company": "Apex Electronics Distribution Ltd",
+    "phone": "+91 98200 11223",
+    "email": "rajesh@apexelectronics.in",
+    "address": "Plot 45, Okhla Industrial Area Phase III, New Delhi",
+    "notes": "Leading distributor for audio, accessories, and peripheral electronics. 15-day credit terms.",
+    "opening_balance": "12500.00",
+    "is_active": true,
+    "is_deleted": false,
+    "created_at": "2026-10-29T06:56:49.804Z",
+    "updated_at": "2026-10-29T06:56:49.804Z"
+  },
+  {
+    "id": "bdce2d62-5905-4612-a02c-1ac3316efc32",
+    "mongo_id": "6ae2ee3114b8199c3d2c2bbb",
+    "name": "Sunita Rao",
+    "company": "FreshMart Wholesale FMCG",
+    "phone": "+91 98450 33445",
+    "email": "orders@freshmartwholesale.com",
+    "address": "B-12 APMC Market Yard, Yeshwanthpur, Bengaluru",
+    "notes": "Primary supplier for packaged groceries, beverages, and daily essentials. 7-day payment cycle.",
+    "opening_balance": "4500.00",
+    "is_active": true,
+    "is_deleted": false,
+    "created_at": "2026-10-29T06:56:49.804Z",
+    "updated_at": "2026-10-29T06:56:49.804Z"
+  },
+  {
+    "id": "4c191323-bac1-47d2-87ba-5d6a3a4b379a",
+    "mongo_id": "6ae2ee3114b8199c3d2c2bbc",
+    "name": "Vikram Mehta",
+    "company": "Prime Office Supplies & Stationery",
+    "phone": "+91 98112 55667",
+    "email": "sales@primeofficesupplies.co",
+    "address": "204 Nariman Point, Commercial Hub, Mumbai",
+    "notes": "High-margin school and stationery goods. Offers 5% discount on prompt settlement.",
+    "opening_balance": "0.00",
+    "is_active": true,
+    "is_deleted": false,
+    "created_at": "2026-10-29T06:56:49.804Z",
+    "updated_at": "2026-10-29T06:56:49.804Z"
+  },
+  {
+    "id": "548fa965-c500-4dfd-9ad6-27707945d1d7",
+    "mongo_id": "6ae2ee3114b8199c3d2c2bbd",
+    "name": "Ananya Deshmukh",
+    "company": "Zenith Home & Personal Care Ltd",
+    "phone": "+91 97654 77889",
+    "email": "ananya@zenithcare.in",
+    "address": "Unit 9, Bhosari MIDC, Pune",
+    "notes": "Detergents, soaps, hygiene, and kitchen essentials.",
+    "opening_balance": "8200.00",
+    "is_active": true,
+    "is_deleted": false,
+    "created_at": "2026-10-29T06:56:49.804Z",
+    "updated_at": "2026-10-29T06:56:49.804Z"
+  }
+]

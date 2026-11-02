@@ -1,0 +1,122 @@
+[
+  {
+    "_id": "6ae2ee3114b8199c3d2c2be2",
+    "purchaseNumber": "PUR-20261001-0001",
+    "supplier": "6ae2ee3114b8199c3d2c2bba",
+    "supplierInvoiceNumber": "APX-INV-8891",
+    "purchaseDate": "2026-10-04T06:56:49.825Z",
+    "dueDate": "2026-10-19T06:56:49.825Z",
+    "items": [
+      {
+        "product": "6ae2ee3114b8199c3d2c2bbf",
+        "productName": "Wireless Bluetooth Earbuds Pro",
+        "sku": "ELEC-EP-001",
+        "quantity": 30,
+        "unitCost": 850,
+        "lineTotal": 25500,
+        "_id": "6ae2ee3114b8199c3d2c2be3"
+      },
+      {
+        "product": "6ae2ee3114b8199c3d2c2bc0",
+        "productName": "Fast Charging Power Bank 20000mAh",
+        "sku": "ELEC-PB-002",
+        "quantity": 15,
+        "unitCost": 920,
+        "lineTotal": 13800,
+        "_id": "6ae2ee3114b8199c3d2c2be4"
+      }
+    ],
+    "subtotal": 39300,
+    "discount": 1000,
+    "tax": 3830,
+    "totalAmount": 42130,
+    "amountPaid": 30000,
+    "balanceDue": 12130,
+    "paymentStatus": "PARTIAL",
+    "notes": "Monthly batch inward of fast moving audio electronics",
+    "createdBy": "6ae2ee3114b8199c3d2c2baa",
+    "__v": 0,
+    "createdAt": "2026-10-29T06:56:49.830Z",
+    "updatedAt": "2026-10-29T06:56:49.830Z"
+  },
+  {
+    "_id": "6ae2ee3114b8199c3d2c2be5",
+    "purchaseNumber": "PUR-20261010-0002",
+    "supplier": "6ae2ee3114b8199c3d2c2bbb",
+    "supplierInvoiceNumber": "FM-7741",
+    "purchaseDate": "2026-10-11T06:56:49.825Z",
+    "dueDate": "2026-11-03T06:56:49.825Z",
+    "items": [
+      {
+        "product": "6ae2ee3114b8199c3d2c2bc3",
+        "productName": "Organic Basmati Rice 5kg",
+        "sku": "FMCG-RC-101",
+        "quantity": 40,
+        "unitCost": 380,
+        "lineTotal": 15200,
+        "_id": "6ae2ee3114b8199c3d2c2be6"
+      },
+      {
+        "product": "6ae2ee3114b8199c3d2c2bc4",
+        "productName": "Cold Pressed Virgin Coconut Oil 1L",
+        "sku": "FMCG-OL-102",
+        "quantity": 25,
+        "unitCost": 260,
+        "lineTotal": 6500,
+        "_id": "6ae2ee3114b8199c3d2c2be7"
+      }
+    ],
+    "subtotal": 21700,
+    "discount": 500,
+    "tax": 1060,
+    "totalAmount": 22260,
+    "amountPaid": 22260,
+    "balanceDue": 0,
+    "paymentStatus": "PAID",
+    "notes": "Groceries restock batch for festive demand",
+    "createdBy": "6ae2ee3114b8199c3d2c2baa",
+    "__v": 0,
+    "createdAt": "2026-10-29T06:56:49.831Z",
+    "updatedAt": "2026-10-29T06:56:49.831Z"
+  },
+  {
+    "_id": "6ae2ee3114b8199c3d2c2be8",
+    "purchaseNumber": "PUR-20261020-0003",
+    "supplier": "6ae2ee3114b8199c3d2c2bbc",
+    "supplierInvoiceNumber": "PRIME-BILL-409",
+    "purchaseDate": "2026-10-21T06:56:49.825Z",
+    "dueDate": "2026-11-12T06:56:49.825Z",
+    "items": [
+      {
+        "product": "6ae2ee3114b8199c3d2c2bc7",
+        "productName": "Hardbound Executive Journal A5",
+        "sku": "STAT-JN-201",
+        "quantity": 35,
+        "unitCost": 140,
+        "lineTotal": 4900,
+        "_id": "6ae2ee3114b8199c3d2c2be9"
+      },
+      {
+        "product": "6ae2ee3114b8199c3d2c2bc8",
+        "productName": "Precision Metal Rollerball Pen (Pack of 3)",
+        "sku": "STAT-PN-202",
+        "quantity": 30,
+        "unitCost": 95,
+        "lineTotal": 2850,
+        "_id": "6ae2ee3114b8199c3d2c2bea"
+      }
+    ],
+    "subtotal": 7750,
+    "discount": 250,
+    "tax": 375,
+    "totalAmount": 7875,
+    "amountPaid": 0,
+    "balanceDue": 7875,
+    "paymentStatus": "UNPAID",
+    "notes": "Corporate stationery batch",
+    "createdBy": "6ae2ee3114b8199c3d2c2baa",
+    "__v": 0,
+    "createdAt": "2026-10-29T06:56:49.831Z",
+    "updatedAt": "2026-10-29T06:56:49.831Z"
+  }
+]
